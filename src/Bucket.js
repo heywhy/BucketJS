@@ -24,10 +24,17 @@
  
 (function(window, undefined){
   /**
-   * function Namespace
-   *
+   * Clasz Namespace
    * class that helps in keeping every state of the contexts
    *
+   * @private property _Tree {Tree}
+   * @private property _bucket {Object}
+   *
+   * @private method _handle
+   * @public method get
+   * @public method add
+   * @public method toString
+   * 
    * @param Object {Tree}
    * @return void
    */
@@ -46,8 +53,7 @@
   }
   
   /**
-   * method add
-   *
+   * Method add
    * adds the new context to the existing bucket
    *
    * @param array
@@ -86,7 +92,7 @@
   }
   
   /**
-   * method get
+   * Method get
    *
    * gets an object of the context id with all depencdencies loaded
    * and instantiated, as parameters if defined.
@@ -142,7 +148,7 @@
             index = nodes.indexOf(kick), funcLen = contexts[i].class.length;
             
             if (typeof contexts[index].class === 'function') {
-              contexts[index].class = this.handle(contexts[index], arg);
+              contexts[index].class = this._handle(contexts[index], arg);
             }
             
             arg.push(contexts[index].class);
@@ -163,9 +169,9 @@
       }
       
       contexts = contexts[0].class;
-      
       // we clean the tree up
       this._Tree.clear();
+      
       return contexts;
     }
         
@@ -173,8 +179,7 @@
   }
   
   /**
-   * method handle
-   *
+   * Method _handle
    * it is used to handle a a dependency which is of
    * type function
    *
@@ -182,7 +187,7 @@
    * @param array // where the remaining contexts will be fetched from
    * @return object
    */
-  Namespace.prototype.handle = function(klass, bucket){
+  Namespace.prototype._handle = function(klass, bucket){
     var len = klass.dependencies.length,
     args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
     endcode = ");})()";
@@ -196,8 +201,7 @@
   }
     
   /**
-   * method toString
-   * 
+   * Method toString
    * we add a toString method so that it can give a much more descriptive information
    * when trying to output it as a string
    *
@@ -208,10 +212,21 @@
   }
   
   /**
-   * function Tree
-   * 
+   * Class Tree
    * this helps in building a cute tree (Binary Tree kinda)
    * to help process dependencies loading in the right order
+   *
+   * @private property root
+   * @private property bucket
+   * @private property searched {array}
+   *
+   * @public method setRoot
+   * @public method clear
+   * @public method add
+   * @public method setBucket
+   * @public method traverse
+   * @public method process
+   * @public method toString
    *
    * @return void
    */
@@ -221,8 +236,7 @@
   }
   
   /**
-   * method traverse
-   *
+   * Method traverse
    * it helps in traversing every nodes
    *
    * @param function
@@ -241,8 +255,7 @@
   }
   
   /**
-   * method add
-   *
+   * Method add
    * for adding a child to a parent node
    *
    * @param object
@@ -275,8 +288,7 @@
   }
   
   /**
-   * method setBucket
-   *
+   * Method setBucket
    * sets the bucket where the children gets fetched
    * return void
    */
@@ -285,8 +297,7 @@
   }
   
   /**
-   * method setRoot
-   *
+   * Method setRoot
    * sets the root of the tree to be built
    * 
    * @param object
@@ -301,9 +312,8 @@
   }
   
   /**
-   * method process
-   * 
-   * it proccesses every node by ading them to their respective parents
+   * Method process
+   * it proccesses every node by adding them to their respective parents
    *
    * @param object
    * @return void
@@ -340,9 +350,8 @@
   }
   
   /**
-   * method clear
-   * it clears the tree
-   *
+   * Method clear
+   * it clears the tree by setting the root to null
    * @return void
    */
   Tree.prototype.clear = function(){
@@ -350,8 +359,7 @@
   }
   
   /**
-   * method toString
-   *
+   * Method toString
    * so that it can give a much more descriptive information
    * when trying to output it as a string
    * @return void
@@ -361,16 +369,14 @@
   }
   
   
-  var ajax = new XMLHttpRequest(), codes = '', baseUrl = 'App/',
-  HOST = location.protocol + '//' + location.host, appRegex = /^app\//i;
-  
+  var ajax = new XMLHttpRequest(), codes = '',
+  HOST = location.protocol + '//' + location.host;
   var backslash = function(string) {
     return string.replace(/\//g, '\\');
   };
   
   /**
-   * function process
-   * 
+   * Function process
    * Fetches the file been passed to it and attaches
    * its content to the {var codes}
    *
@@ -392,21 +398,20 @@
       } else {
         requestError = true;
       }
-    }, url = HOST+'/'+baseUrl;
+    }, url = HOST+file;
     
     ajax.onreadystatechange = callback;
         
-    ajax.open('GET', url+file, false);
+    ajax.open('GET', url, false);
     ajax.send(null);
         
     if (requestError) {
-      throw new Error(url+file+": "+ajax.statusText);
+      throw new Error(url+": "+ajax.statusText);
     }
   }
     
   /**
-   * function require
-   * 
+   * Function require
    * it fetches files from the server if not on the page already.
    * delegating the processing of the files to the process function 
    *
@@ -422,116 +427,68 @@
       require.cache = {};
     }
     
-    for (var id in files) {
-      var file = files[id].replace(/^(\.\/)/, '');
+    var config = require.config;
+    
+    for (var id = 0, len = files.length; id < len; id++) {
+      var file = files[id];
       
-      if (file.match(/(\.js)$/i) === null) {
-        file = file+'.js'
+      /**
+       * we check if filters is|are defined so that we can match them to the
+       * right path specified by the filter
+       */
+      if (require.config.filters !== undefined) {
+        for (var filter in config.filters) {
+          var regex = new RegExp("^("+filter+")", "i"),
+          src = config.filters[filter].replace(/^\//, '').replace(/\/$/, '');
+          
+          if (regex.test(file)) {
+            file = file.replace(regex, '/'+src);
+            break;
+          }
+        }
       }
       
-      if (file.search(appRegex) > -1) {
-        file = file.replace(appRegex, '');
+      if (file.match(/(\.js)$/i) === null) {
+        file += '.js'
       }
       
       process(file);
-      require[baseUrl+file] = true;
+      require[file] = true;
     }
         
     eval(codes);
     codes = '';
   }
-    
-  /**
-   * function require.setBase
-   *
-   * it sets the base directory where the files should
-   * be loaded from
-   *
-   * @param string
-   * @return void
-   */
-  require.setBase = function(directory){
-    baseUrl = directory;
-  }
   
   /**
-   * function require.getBase
-   * 
-   * it returns the base directory where files are loaded
-   * from
-   *
-   * @return string
+   * property config
+   * @var object
    */
-  require.getBase = function(){
-    return baseUrl;
-  }
-    
-  /**
-   * function require.attach
-   * 
-   * it adds a new path to the base directory
-   * e.g baseUrl = 'src/core'
-   * require.attach('/auth');
-   * console.log(baseUrl); => src/core/auth
-   * 
-   * @param string
-   * @return void
-   */
-  require.attach = function(path){
-    baseUrl += path;
-  }
+  require.config = {base: 'app'};
   
   /**
-   * function requre.detach
-   *
-   * removes a subpath from the base directory
-   * e.g. baseUrl = 'src/core/auth'
-   * require.detach('/core');
-   * console.log(baseUrl); => src/auth
-   *
-   * @param string
+   * Function require.setConfig
+   * @param object
    * @return void
    */
-  require.detach = function(path){
-    if (baseUrl.match(path) !== null) {
-      baseUrl = baseUrl.replace(path, '');
+  require.setConfig = function(config) {
+    for (var id in config) {
+      id = id.toLowerCase();
+      require.config[id] = config[id]
     }
   }
   
   /**
-   * function require.loaded
-   * 
-   * used to verify if a file has been loaded
-   *
-   * @param string
-   * @return bool
-   */
-  require.loaded = function(file){
-    if (require[file] === true) {
-      return true;
-    }
-    
-    return false;
-  }
-  
-  /**
-   * function Bucket
-   *
-   * its a basic facade to the underlying jigs
+   * Function Bucket
+   * its a basic facade to the underlying core of the
+   * library
    * 
    * @return void|object
    */
     
   window.Bucket = function(id, context){
     if (typeof id === 'string') {
-      if (Bucket._config !== undefined) {
-        if (Bucket._config.fetch) {
-          if (Bucket._config.base !== undefined && Bucket._config.base !== null) {
-            require.setBase(Bucket._config.base);
-          }
-          require([id]);
-        }
-      }
+      require([id]);
       
       return Bucket._space.get(id);
     }
@@ -539,16 +496,12 @@
       Bucket._space.add(id, context);
     }
     else if (typeof id === 'object') {
-      Bucket._config = id;
+      require.setConfig(id);
     }
   }
     
   Bucket._space = new Namespace(new Tree());
   
-  Bucket._config = {
-    fetch: false,
-    base: null
-  };
-  
   window.B = Bucket;
+  
 })(window)
