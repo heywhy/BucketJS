@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 BucketJS:
 * it tries to help you make your codes well organised.
 * not having to get disturbed if a function has been declared before.
@@ -153,3 +154,6 @@ the library and you can contribute to it.
 
 and if you think there are some things we missing, please kindly contact us
 at **atandarash@gmail.com**
+=======
+# BucketJS
+>>>>>>> branch 'master' of https://github.com/heywhy/BucketJS.git
