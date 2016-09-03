@@ -369,11 +369,25 @@
   }
   
   
-  var ajax = new XMLHttpRequest(), codes = '',
+  var ajax = undefined, codes = '',
   HOST = location.protocol + '//' + location.host;
   var backslash = function(string) {
     return string.replace(/\//g, '\\');
   };
+  
+  try {
+    ajax = new XMLHttpRequest();
+  } catch(e) {
+    try {
+      ajax = new ActiveXObject('Msxml2.XMLHTTP.6.0');
+    } catch(e) {
+      try {
+        ajax = new ActiveXObject('Msxml2.XMLHTTP.3.0');
+      } catch(e) {
+        throw new Error('XMLHttpRequest not supported')
+      }
+    }
+  }
   
   /**
    * Function process

@@ -24,10 +24,17 @@
 
 (function(window, undefined){
   /**
-   * function Namespace
-   *
+   * Clasz Namespace
    * class that helps in keeping every state of the contexts
    *
+   * @private property _Tree {Tree}
+   * @private property _bucket {Object}
+   *
+   * @private method _handle
+   * @public method get
+   * @public method add
+   * @public method toString
+   * 
    * @param Object {Tree}
    * @return void
    */
@@ -46,8 +53,7 @@
   }
   
   /**
-   * method add
-   *
+   * Method add
    * adds the new context to the existing bucket
    *
    * @param array
@@ -86,7 +92,7 @@
   }
   
   /**
-   * method get
+   * Method get
    *
    * gets an object of the context id with all depencdencies loaded
    * and instantiated, as parameters if defined.
@@ -142,7 +148,7 @@
             index = nodes.indexOf(kick), funcLen = contexts[i].class.length;
             
             if (typeof contexts[index].class === 'function') {
-              contexts[index].class = this.handle(contexts[index], arg);
+              contexts[index].class = this._handle(contexts[index], arg);
             }
             
             arg.push(contexts[index].class);
@@ -163,9 +169,9 @@
       }
       
       contexts = contexts[0].class;
-      
       // we clean the tree up
       this._Tree.clear();
+      
       return contexts;
     }
         
@@ -173,8 +179,7 @@
   }
   
   /**
-   * method handle
-   *
+   * Method _handle
    * it is used to handle a a dependency which is of
    * type function
    *
@@ -182,7 +187,7 @@
    * @param array // where the remaining contexts will be fetched from
    * @return object
    */
-  Namespace.prototype.handle = function(klass, bucket){
+  Namespace.prototype._handle = function(klass, bucket){
     var len = klass.dependencies.length,
     args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
     endcode = ");})()";
@@ -196,8 +201,7 @@
   }
     
   /**
-   * method toString
-   * 
+   * Method toString
    * we add a toString method so that it can give a much more descriptive information
    * when trying to output it as a string
    *
@@ -206,5 +210,4 @@
   Namespace.prototype.toString = function(){
     return 'Namespace::class';
   }
-  
 })(window)

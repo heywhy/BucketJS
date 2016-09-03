@@ -24,10 +24,21 @@
 
 (function(window, undefined){
   /**
-   * function Tree
-   * 
+   * Class Tree
    * this helps in building a cute tree (Binary Tree kinda)
    * to help process dependencies loading in the right order
+   *
+   * @private property root
+   * @private property bucket
+   * @private property searched {array}
+   *
+   * @public method setRoot
+   * @public method clear
+   * @public method add
+   * @public method setBucket
+   * @public method traverse
+   * @public method process
+   * @public method toString
    *
    * @return void
    */
@@ -37,8 +48,7 @@
   }
   
   /**
-   * method traverse
-   *
+   * Method traverse
    * it helps in traversing every nodes
    *
    * @param function
@@ -57,8 +67,7 @@
   }
   
   /**
-   * method add
-   *
+   * Method add
    * for adding a child to a parent node
    *
    * @param object
@@ -91,8 +100,7 @@
   }
   
   /**
-   * method setBucket
-   *
+   * Method setBucket
    * sets the bucket where the children gets fetched
    * return void
    */
@@ -101,8 +109,7 @@
   }
   
   /**
-   * method setRoot
-   *
+   * Method setRoot
    * sets the root of the tree to be built
    * 
    * @param object
@@ -117,9 +124,8 @@
   }
   
   /**
-   * method process
-   * 
-   * it proccesses every node by ading them to their respective parents
+   * Method process
+   * it proccesses every node by adding them to their respective parents
    *
    * @param object
    * @return void
@@ -156,9 +162,8 @@
   }
   
   /**
-   * method clear
-   * it clears the tree
-   *
+   * Method clear
+   * it clears the tree by setting the root to null
    * @return void
    */
   Tree.prototype.clear = function(){
@@ -166,14 +171,12 @@
   }
   
   /**
-   * method toString
-   *
+   * Method toString
    * so that it can give a much more descriptive information
    * when trying to output it as a string
    * @return void
    */
   Tree.prototype.toString = function(){
     return 'Tree::class';
-  }
-    
+  } 
 })(window)

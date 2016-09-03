@@ -23,16 +23,28 @@
  */
  
 (function(window, undefined){
-  var ajax = new XMLHttpRequest(), codes = '', baseUrl = 'App/',
-  HOST = location.protocol + '//' + location.host, appRegex = /^app\//i;
-  
+  var ajax = undefined, codes = '',
+  HOST = location.protocol + '//' + location.host;
   window.backslash = function(string) {
     return string.replace(/\//g, '\\');
   };
   
+  try {
+    ajax = new XMLHttpRequest();
+  } catch(e) {
+    try {
+      ajax = new ActiveXObject('Msxml2.XMLHTTP.6.0');
+    } catch(e) {
+      try {
+        ajax = new ActiveXObject('Msxml2.XMLHTTP.3.0');
+      } catch(e) {
+        throw new Error('XMLHttpRequest not supported')
+      }
+    }
+  }
+  
   /**
-   * function process
-   * 
+   * Function process
    * Fetches the file been passed to it and attaches
    * its content to the {var codes}
    *
@@ -54,21 +66,20 @@
       } else {
         requestError = true;
       }
-    }, url = HOST+'/'+baseUrl;
+    }, url = HOST+file;
     
     ajax.onreadystatechange = callback;
         
-    ajax.open('GET', url+file, false);
+    ajax.open('GET', url, false);
     ajax.send(null);
         
     if (requestError) {
-      throw new Error(url+file+": "+ajax.statusText);
+      throw new Error(url+": "+ajax.statusText);
     }
   }
     
   /**
-   * function require
-   * 
+   * Function require
    * it fetches files from the server if not on the page already.
    * delegating the processing of the files to the process function 
    *
@@ -84,96 +95,54 @@
       require.cache = {};
     }
     
-    for (var id in files) {
-      var file = files[id].replace(/^(\.\/)/, '');
+    var config = require.config;
+    
+    for (var id = 0, len = files.length; id < len; id++) {
+      var file = files[id];
       
-      if (file.match(/(\.js)$/i) === null) {
-        file = file+'.js'
+      /**
+       * we check if filters is|are defined so that we can match them to the
+       * right path specified by the filter
+       */
+      if (require.config.filters !== undefined) {
+        for (var filter in config.filters) {
+          var regex = new RegExp("^("+filter+")", "i"),
+          src = config.filters[filter].replace(/^\//, '').replace(/\/$/, '');
+          
+          if (regex.test(file)) {
+            file = file.replace(regex, '/'+src);
+            break;
+          }
+        }
       }
       
-      if (file.search(appRegex) > -1) {
-        file = file.replace(appRegex, '');
+      if (file.match(/(\.js)$/i) === null) {
+        file += '.js'
       }
       
       process(file);
-      require[baseUrl+file] = true;
+      require[file] = true;
     }
         
     eval(codes);
     codes = '';
   }
-    
-  /**
-   * function require.setBase
-   *
-   * it sets the base directory where the files should
-   * be loaded from
-   *
-   * @param string
-   * @return void
-   */
-  require.setBase = function(directory){
-    baseUrl = directory;
-  }
   
   /**
-   * function require.getBase
-   * 
-   * it returns the base directory where files are loaded
-   * from
-   *
-   * @return string
+   * static property config
+   * @var object
    */
-  require.getBase = function(){
-    return baseUrl;
-  }
-    
-  /**
-   * function require.attach
-   * 
-   * it adds a new path to the base directory
-   * e.g baseUrl = 'src/core'
-   * require.attach('/auth');
-   * console.log(baseUrl); => src/core/auth
-   * 
-   * @param string
-   * @return void
-   */
-  require.attach = function(path){
-    baseUrl += path;
-  }
+  require.config = {base: 'app'};
   
   /**
-   * function requre.detach
-   *
-   * removes a subpath from the base directory
-   * e.g. baseUrl = 'src/core/auth'
-   * require.detach('/core');
-   * console.log(baseUrl); => src/auth
-   *
-   * @param string
+   * static require.setConfig
+   * @param object
    * @return void
    */
-  require.detach = function(path){
-    if (baseUrl.match(path) !== null) {
-      baseUrl = baseUrl.replace(path, '');
+  require.setConfig = function(config) {
+    for (var id in config) {
+      id = id.toLowerCase();
+      require.config[id] = config[id]
     }
   }
-  
-  /**
-   * function require.loaded
-   * 
-   * used to verify if a file has been loaded
-   *
-   * @param string
-   * @return bool
-   */
-  require.loaded = function(file){
-    if (require[file] === true) {
-      return true;
-    }
-    
-    return false;
-  }
-
 })(this);

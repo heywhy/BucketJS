@@ -25,23 +25,16 @@
 (function(window, undefined){
     
   /**
-   * function Bucket
-   *
-   * its a basic facade to the underlying jigs
+   * Function Bucket
+   * its a basic facade to the underlying core of the
+   * library
    * 
    * @return void|object
    */
     
   window.Bucket = function(id, context){
     if (typeof id === 'string') {
-      if (Bucket._config !== undefined) {
-        if (Bucket._config.fetch) {
-          if (Bucket._config.base !== undefined && Bucket._config.base !== null) {
-            require.setBase(Bucket._config.base);
-          }
-          require([id]);
-        }
-      }
+      require([id]);
       
       return Bucket._space.get(id);
     }
@@ -49,16 +42,18 @@
       Bucket._space.add(id, context);
     }
     else if (typeof id === 'object') {
-      Bucket._config = id;
+      require.setConfig(id);
     }
   }
-    
+  
+  /**
+   * static property _space
+   * @property object
+   */
   Bucket._space = new Namespace(new Tree());
   
-  Bucket._config = {
-    fetch: false,
-    base: null
-  };
-  
+  /**
+   * @var function // an alias to Bucket
+   */
   window.B = Bucket;
 })(window)
