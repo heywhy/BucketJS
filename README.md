@@ -7,14 +7,14 @@
     }
   }); matches www/app/game.js
 ...* you will find some examples below
-* trying to implement Namespacing in the otger languages
+* trying to implement Namespacing in the other languages
 * Include the src/Bucket.js file in your page and you are set to use it.
 * The dist directory consists of the different aspects implemented into the library
 
-it is very basic to use
+it is very simple to use
 ```javascript
 /**
- * the files are fetched from a default directory App e.g. www/app, www/js/app
+ * the files are fetched from a default folder App e.g. www/app, www/js/app
  * you can also set the base directory where the app folder is
  * e.g. Bucket({fetch: true, base: js/app/});
  * it will fetch the files from www/js/app directory
@@ -56,7 +56,7 @@ Bucket(['App/Core/Welcome', ['App/Core/Hello', 'App/Core/Bye']], function(hello,
 // file; www/app/core/bye.js
 Bucket(['App/Core/Bye'], function(){
   this.bye = function(){
-    alert('Thank you for trying me out');
+    alert('Thank you for trying me out. Courtesy: BucketJS');
   }
 });
 
@@ -64,7 +64,7 @@ Bucket(['App/Core/Bye'], function(){
 // to get the instantiated copy
 var app = Bucket('App/Core/Welcome');
 app.welcome(); // => 'hello world'
-app.bye() // => 'Thank you for trying me out'
+app.bye() // => 'Thank you for trying me out. Courtesy: BucketJS'
 ```
 
 If you think the project worths it, you can break
