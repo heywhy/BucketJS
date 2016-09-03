@@ -71,4 +71,4 @@ If you think the project worths it, you can break
 the library and you can contribute to it.
 
 and if you think there are some things we missing, please kindly contact us
-at [atandarash](atandarash@gmail.com)
+at atandarash@gmail.com
