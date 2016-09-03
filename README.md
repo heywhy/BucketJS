@@ -1,12 +1,12 @@
 # BucketJS Library
 * it tries to help you make your codes well organised i.e. a class per file
-...* var control = Bucket('App/Core/Controller') matches app/core/controller.js file in the base directory.
-...* Bucket(['App/Game'], function(){
+..* var control = Bucket('App/Core/Controller') matches app/core/controller.js file in the base directory.
+..* Bucket(['App/Game'], function(){
     this.init = function(){
       console.log('game started');
     }
   }); matches www/app/game.js
-...* you will find some examples below
+..* you will find some examples below
 * trying to implement Namespacing in the other languages
 * Include the src/Bucket.js file in your page and you are set to use it.
 * The dist directory consists of the different aspects implemented into the library
