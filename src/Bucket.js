@@ -461,13 +461,13 @@
   }
   
   /**
-   * property config
+   * static property config
    * @var object
    */
   require.config = {base: 'app'};
   
   /**
-   * Function require.setConfig
+   * static require.setConfig
    * @param object
    * @return void
    */
@@ -499,9 +499,16 @@
       require.setConfig(id);
     }
   }
-    
+  
+  /**
+   * static property _space
+   * @property object
+   */
   Bucket._space = new Namespace(new Tree());
   
+  /**
+   * @var function // an alias to Bucket
+   */
   window.B = Bucket;
   
 })(window)
