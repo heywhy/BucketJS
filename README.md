@@ -16,8 +16,24 @@ it is very simple to use
 /**
  * the files are fetched from a default folder App e.g. www/app, www/js/app
  * you can also set the base directory where the app folder is
- * e.g. Bucket({fetch: true, base: js/app/});
+ * e.g. version 0.1.0: Bucket({fetch: true, base: js/app/});
  * it will fetch the files from www/js/app directory
+ *
+ * version 0.1.1: Bucket({
+ *   /**
+ *    * the default base is www/app if base is not set
+ *    */
+ *   base: 'mobile',
+ *   filters: {
+ *     /**
+ *      * namespace id Bucket will be fetched from directory www/mobile/src/core
+ *      */
+ *     'Bucket': 'src/core',
+ *     /**
+ *      * namespace id App/Core will be fetched from www/framework
+ *     'App/Core': 'framework'
+ *   }
+ * });
  */
  
 // to define a class, the classname must match the path to the file
@@ -65,7 +81,35 @@ Bucket(['App/Core/Bye'], function(){
 var app = Bucket('App/Core/Welcome');
 app.welcome(); // => 'hello world'
 app.bye() // => 'Thank you for trying me out. Courtesy: BucketJS'
+
+/**
+ * features prior to v0.1.1
+ * adde a new variable B as an alias to Bucket for conviniences reason
+ * if not wanting to use Bucket.
+ * trying out the namespace aliasing the above examples
+ * assuming we changed the directory of some files but still want to use same
+ * namespace id
+ * e.g.
+ */
+B({
+  /**
+   * if not set, defaults to app folder under webroot
+   * because every namespace which hasnt been filtered out will be
+   * searched for in the directory
+   */
+  base: 'project',
+  /**
+   * every contexts under App will be mapped
+   * to www/mobile/src directory
+   */
+  filters: {
+    'App': 'moblie/src'
+  }
+})
 ```
+
+Some features has been added prior to version 0.1.1, you can check the
+changelog file in the base directory.
 
 If you think the project worths it, you can break
 the library and you can contribute to it.
