@@ -186,7 +186,6 @@
     var len = klass.dependencies.length,
     args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
     endcode = ");})()";
-    alert(bucket)
     
     for (var i = 0; i < len; i++) {
       codes += "args["+i+"],";
