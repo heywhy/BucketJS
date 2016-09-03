@@ -1,0 +1,17 @@
+version 0.1.1:
+* removed property fetch of the configuration object
+* added filters property to configuration options
+-* the aim is to allow path alias to a namespaces e.g.
+-* Bucket({
+-*   /**
+_*    * the default base is www/app if base is not set
+_*    */
+-*   base: 'mobile',
+-*   filters: {
+-*     /**
+-*      * namespace id Bucket will be fetched from directory www/mobile/src/core
+-*      */
+-*     'Bucket': 'src/core' 
+-*   }
+-* });
+* well descriptive comments updated.
