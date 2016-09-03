@@ -2,7 +2,7 @@
     "name": "heywhy/bucketjs",
     "type": "library",
     "description": "It helps in managing and keeping your codes|projects well organized",
-    "keywords": ["js", "namespace", "library"],
+    "keywords": ["js", "namespace", "library", "bucketjs", "bucket"],
     "homepage": "https://heywhy.github.io/BucketJS/",
     "license": "MIT",
     "authors": [
