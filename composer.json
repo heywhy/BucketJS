@@ -1,0 +1,15 @@
+{
+    "name": "heywhy/bucketjs",
+    "type": "library",
+    "description": "It helps in managing and keeping your codes|projects well organized",
+    "keywords": ["js", "namespace", "library"],
+    "homepage": "https://heywhy.github.io/BucketJS/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Atanda Rasheed",
+            "email": "atandarash@gmail.com",
+            "role": "Developer"
+        }
+    ]
+}
