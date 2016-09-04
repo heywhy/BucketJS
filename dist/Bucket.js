@@ -50,8 +50,38 @@
    * static property _space
    * @property object
    */
-  Bucket._space = new Namespace(new Tree());
+  Bucket._space = new Namespace(new Tree(), new EventManager());
   
+  /**
+   *
+   */
+  Bucket.eventManager = new EventManager();
+  /**
+   * static method listen
+   * it adds a listener to an event
+   * @param string // name of the event to listen to
+   * @param function // the funct8on that gets excuted when the event occurs
+   * @return number // a token assigned to the listener
+   */
+  Bucket.listen = function(eventid, callback){
+    var event = eventid.split('.');
+    if (event[0].toLowerCase() === 'require') {
+      event = event.splice(1).join('.')
+      require.event.listen(event, callback);
+    } else if (event[0].toLowerCase() === 'namespace') {
+      event = event.splice(1).join('.');
+      Bucket._space._eventManager.listen(event, callback);
+    } else {
+      return Bucket.eventManager.listen(eventid, callback);
+    }
+  }
+  
+  /**
+   *
+   */
+  Bucket.trigger = function(event, arg){
+    Bucket.eventManager.trigger(event, arg);
+  }
   /**
    * @var function // an alias to Bucket
    */

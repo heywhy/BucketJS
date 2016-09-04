@@ -100,6 +100,8 @@
     for (var id = 0, len = files.length; id < len; id++) {
       var file = files[id];
       
+      require.event.trigger('beforeload.'+file);
+      
       /**
        * we check if filters is|are defined so that we can match them to the
        * right path specified by the filter
@@ -121,6 +123,7 @@
       }
       
       process(file);
+      require.event.trigger('afterload.'+files[id]);
       require[file] = true;
     }
         
@@ -145,4 +148,6 @@
       require.config[id] = config[id]
     }
   }
+  
+  require.event = new EventManager();
 })(this);

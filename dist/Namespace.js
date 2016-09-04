@@ -28,6 +28,7 @@
    * class that helps in keeping every state of the contexts
    *
    * @private property _Tree {Tree}
+   * @private property _eventManger {EventManager}
    * @private property _bucket {Object}
    *
    * @private method _handle
@@ -38,8 +39,9 @@
    * @param Object {Tree}
    * @return void
    */
-  window.Namespace = function(tree){
+  window.Namespace = function(tree, eventManager){
     this._Tree = tree;
+    this._eventManager = eventManager;
     
     if (this._Tree === undefined) {
       this._Tree = new Tree();
@@ -48,7 +50,15 @@
     if (!(this._Tree instanceof Tree)) {
       throw new TypeError("class Namespace constructor expects param to be an instance of Tree");
     }
-        
+    
+    if (this._eventManager === undefined) {
+      this._eventManager = new EventManager();
+    }
+    
+    if (!(this._eventManager instanceof EventManager)) {
+      throw new TypeError("class Namespace constructor expects second param to be an instance of EventManager");
+    }
+    
     this._bucket = {};
   }
   
