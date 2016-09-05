@@ -257,4 +257,5 @@
   Namespace.prototype.toString = function(){
     return 'Namespace::class';
   }
+  
 })(window)

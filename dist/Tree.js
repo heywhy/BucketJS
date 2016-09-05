@@ -178,5 +178,6 @@
    */
   Tree.prototype.toString = function(){
     return 'Tree::class';
-  } 
+  }
+
 })(window)

@@ -159,4 +159,5 @@
    * @var object {EventManager}
    */
   require.event = new EventManager();
+
 })(this);

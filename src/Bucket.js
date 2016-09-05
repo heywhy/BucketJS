@@ -24,10 +24,33 @@
  
 (function(window, undefined){
   /**
-   * Clasz Namespace
+   * Class Namespace
    * class that helps in keeping every state of the contexts
+   * some events are triggered during the excution of the app
+   * Events:
+   *   add,
+   *   create
+   *
+   * The add event gets triggered when a new namespaceid gets
+   * added with its context, to listen to the event you make a call
+   * to Bucket.listen method passing the id of the event prefixing the
+   * event id with namespace, including the namespace id and the
+   * context gets passed to it e.g.
+   * assuming we listening to when App/Welcome context gets added
+   * Bucket.listen('namespace.add.App/Welcome', function(context){
+   *   context.prototype.log = new Logger();
+   * });
+   * 
+   * The create event gets triggered when the context gets instantiated
+   * The rules above applies to listening to the event, just that the 
+   * name of the event changes from add to create, and the instantiated
+   * copy gets passed to the listener e.g.
+   * Bucket.listen('namespace.create.App/Welcome', function(context){
+   *   context.response = 'Hello World'
+   * });
    *
    * @private property _Tree {Tree}
+   * @private property _eventManger {EventManager}
    * @private property _bucket {Object}
    *
    * @private method _handle
@@ -35,11 +58,12 @@
    * @public method add
    * @public method toString
    * 
-   * @param Object {Tree}
+   * @param object {Tree}
    * @return void
    */
-  var Namespace = function(tree){
+  var Namespace = function(tree, eventManager){
     this._Tree = tree;
+    this._eventManager = eventManager;
     
     if (this._Tree === undefined) {
       this._Tree = new Tree();
@@ -48,7 +72,15 @@
     if (!(this._Tree instanceof Tree)) {
       throw new TypeError("class Namespace constructor expects param to be an instance of Tree");
     }
-        
+    
+    if (this._eventManager === undefined) {
+      this._eventManager = new EventManager();
+    }
+    
+    if (!(this._eventManager instanceof EventManager)) {
+      throw new TypeError("class Namespace constructor expects second param to be an instance of EventManager");
+    }
+    
     this._bucket = {};
   }
   
@@ -89,6 +121,9 @@
       'class': context,
       dependencies: dependencies
     };
+    
+    // triggers event add.namespaceid e.g. add.App\Welcome
+    this._eventManager.trigger('add.'+id[0], [context]);
   }
   
   /**
@@ -138,8 +173,13 @@
       });
       
       for (var i = nodes.length - 1; i > -1; --i) {
+        id = forwardslash(contexts[i].id);
+        
         if (contexts[i].class.length === 0) {
           contexts[i].class = new contexts[i].class;
+          // triggers event create.class
+          this._eventManager.trigger('create.'+id, [contexts[i].class]);
+          
         } else {
           var codes = "(function(){return new contexts[i].class(", endcode = ");})()";
           
@@ -161,6 +201,9 @@
           codes = codes.replace(/,$/, '') + endcode;
           
           contexts[i].class = eval(codes);
+          
+          // triggers event create.class
+          this._eventManager.trigger('create.'+id, [contexts[i].class]);
           
           for (k = 0; k < funcLen; k++) {
             arg.shift();
@@ -190,14 +233,18 @@
   Namespace.prototype._handle = function(klass, bucket){
     var len = klass.dependencies.length,
     args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
-    endcode = ");})()";
+    endcode = ");})()", id = forwardslash(klass.id);
     
     for (var i = 0; i < len; i++) {
       codes += "args["+i+"],";
     }
     codes = codes.replace(/,$/, '') + endcode;
     
-    return eval(codes);
+    var context = eval(codes);
+    // triggers event create.class
+    this._eventManager.trigger('create.'+id, [context]);
+    
+    return context;
   }
     
   /**
@@ -209,6 +256,104 @@
    */
   Namespace.prototype.toString = function(){
     return 'Namespace::class';
+  }
+  
+  /**
+   * class EventManager
+   * its helps to manage any event that occurs during execution
+   * of the app
+   *
+   * @private property events
+   * @public method listen
+   * @public method trigger
+   * @public method unListen
+   * 
+   * @return void
+   */
+  var EventManager = function(){
+    this.events = {};
+  }
+  
+  /**
+   * Method listen
+   * it adds a listener to an event before it occurs
+   *
+   * @param string // name of the event
+   * @param function // the function that gets called when the event occurs
+   * @param number // token to use when unlistening to an event
+   */
+  EventManager.prototype.listen = function(event, callback){
+    if (!this.events[event]) {
+      this.events[event] = [];
+    }
+    
+    var token = Date.now();
+    
+    this.events[event].push({
+      token: token,
+      callback: callback
+    });
+    
+    return token;
+  }
+  
+  /**
+   * Method trigger
+   * this triggers an event informing all listeners related to the event
+   *
+   * @param string // name of the event that's occurring
+   * @param array // arguments to be passed to the listeners
+   * @return self
+   */
+  EventManager.prototype.trigger = function(event, arg){
+    if (!this.events[event]) {
+      return false;
+    }
+    
+    var listeners = this.events[event];
+    
+    for (var id = 0, len = listeners.length; id < len; id++) {
+      listeners[id].callback.apply(null, arg);
+    }
+    
+    return this;
+  }
+  
+  /**
+   * Method unListen
+   * to remove a listener from an event using the token given to it when
+   * it first started listening to the event to occur, if the token
+   * is registered to the event the token is return else self {EventManager::class}
+   * 
+   * @param number
+   * @return self|number // EventManager|token
+   */
+  EventManager.prototype.unListen = function(token){
+    for (var event in this.events) {
+      if (this.events[event]) {
+        var listeners = this.events[event];
+        for (var id = 0, len = listeners.length; id < len; id++) {
+          if (listeners[id].token === token) {
+            listeners.splice(id, 1);
+            
+            return token;
+          }
+        }
+      }
+    }
+    
+    return this;
+  }
+  
+  /**
+   * Method toString
+   * so that it can give a much more descriptive information
+   * when trying to output it as a string
+   * 
+   * @return string
+   */
+  EventManager.prototype.toString = function(event, arg){
+    return 'EventManager::class';
   }
   
   /**
@@ -326,7 +471,7 @@
       parent.context = child;
     } else {parent = this.root}
     
-    var dependencies = parent.context.dependencies, dontLoad = [];
+    var dependencies = parent.context.dependencies;
     
     if (dependencies !== null) {
       require(dependencies);
@@ -368,11 +513,13 @@
     return 'Tree::class';
   }
   
-  
   var ajax = undefined, codes = '',
-  HOST = location.protocol + '//' + location.host;
-  var backslash = function(string) {
+  HOST = location.protocol + '//' + location.host,
+  backslash = function(string) {
     return string.replace(/\//g, '\\');
+  },
+  forwardslash = function(string) {
+    return string.replace(/\\/g, '/');
   };
   
   try {
@@ -446,6 +593,9 @@
     for (var id = 0, len = files.length; id < len; id++) {
       var file = files[id];
       
+      // triggers event beforeload.file
+      require.event.trigger('beforeload.'+file);
+      
       /**
        * we check if filters is|are defined so that we can match them to the
        * right path specified by the filter
@@ -467,6 +617,8 @@
       }
       
       process(file);
+      // triggers event afterload.file
+      require.event.trigger('afterload.'+files[id]);
       require[file] = true;
     }
         
@@ -481,7 +633,7 @@
   require.config = {base: 'app'};
   
   /**
-   * static require.setConfig
+   * static method require.setConfig
    * @param object
    * @return void
    */
@@ -491,6 +643,12 @@
       require.config[id] = config[id]
     }
   }
+  
+  /**
+   * static property event
+   * @var object {EventManager}
+   */
+  require.event = new EventManager();
   
   /**
    * Function Bucket
@@ -518,7 +676,85 @@
    * static property _space
    * @property object
    */
-  Bucket._space = new Namespace(new Tree());
+  Bucket._space = new Namespace(new Tree(), new EventManager());
+  
+  /**
+   *
+   */
+  Bucket.eventManager = new EventManager();
+  /**
+   * static method listen
+   * it adds a listener to an event
+   * @param string // name of the event to listen to
+   * @param function // the funct8on that gets excuted when the event occurs
+   * @return number // a token assigned to the listener
+   */
+  Bucket.listen = function(eventid, callback){
+    var event = eventid.split('.'), token;
+    if (event[0].toLowerCase() === 'require') {
+      event = event.splice(1).join('.')
+      token = 'require'+require.event.listen(event, callback);
+    } else if (event[0].toLowerCase() === 'namespace') {
+      event = event.splice(1).join('.');
+      token = 'namespace'+Bucket._space._eventManager.listen(event, callback);
+    } else {
+      token = Bucket.eventManager.listen(eventid, callback);
+    }
+    
+    return token;
+  }
+  
+  /**
+   * static method trigger
+   * triggers an event, telling it listeners that an event has occured
+   * @param string
+   * @param array
+   * @return void
+   */
+  Bucket.trigger = function(event, arg){
+    Bucket.eventManager.trigger(event, arg);
+  }
+  
+  /**
+   * static method unListen
+   * removes a listener from its parent
+   *
+   * @param string
+   * @return string
+   */
+  Bucket.unListen = function(token){
+    var reply;
+    if (token.match(/^(namespace)/i) !== null) {
+      token = parseInt(token.replace(/^(namespace)/i, ''));
+      reply = Bucket._space._eventManager.unListen(token);
+    } else if (token.match(/^(require)/i) !== null) {
+      token = parseInt(token.replace(/^(require)/i, ''));
+      reply = require.event.unListen(token);
+    } else {
+      reply = Bucket.eventManager.unListen(token);
+    }
+    
+    return reply;
+  }
+  
+  /**
+   * static method addProperty
+   * it adds new properties to the prototype of the context
+   * @param function
+   * @param object
+   * @return function // the passed context
+   */
+  Bucket.addProperty = function(context, methods){
+    if (typeof context !== 'function') {
+      throw new Error('Bucket::addMethods expects first param to be function.');
+    }
+    
+    for (var i in methods) {
+      context.prototype[i] = methods[i];
+    }
+    
+    return context;
+  }
   
   /**
    * @var function // an alias to Bucket

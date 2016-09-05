@@ -23,7 +23,6 @@
  */
 
 (function(window, undefined){
-    
   /**
    * Function Bucket
    * its a basic facade to the underlying core of the
@@ -134,4 +133,5 @@
    * @var function // an alias to Bucket
    */
   window.B = Bucket;
+
 })(window)
