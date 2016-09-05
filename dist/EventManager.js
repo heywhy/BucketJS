@@ -25,7 +25,7 @@
 (function(window, undefined){
   /**
    * class EventManager
-   * its helps to manage any event occurs during execution
+   * its helps to manage any event that occurs during execution
    * of the app
    *
    * @private property events
@@ -66,8 +66,8 @@
    * Method trigger
    * this triggers an event informing all listeners related to the event
    *
-   * @param string
-   * @param array // arguments passed to the listeners
+   * @param string // name of the event that's occurring
+   * @param array // arguments to be passed to the listeners
    * @return self
    */
   EventManager.prototype.trigger = function(event, arg){
@@ -87,7 +87,8 @@
   /**
    * Method unListen
    * to remove a listener from an event using the token given to it when
-   * it first started listening to the event to occur
+   * it first started listening to the event to occur, if the token
+   * is registered to the event the token is return else self {EventManager::class}
    * 
    * @param number
    * @return self|number // EventManager|token
@@ -111,6 +112,10 @@
   
   /**
    * Method toString
+   * so that it can give a much more descriptive information
+   * when trying to output it as a string
+   * 
+   * @return string
    */
   EventManager.prototype.toString = function(event, arg){
     return 'EventManager::class';
