@@ -24,8 +24,30 @@
 
 (function(window, undefined){
   /**
-   * Clasz Namespace
+   * Class Namespace
    * class that helps in keeping every state of the contexts
+   * some events are triggered during the excution of the app
+   * Events:
+   *   add,
+   *   create
+   *
+   * The add event gets triggered when a new namespaceid gets
+   * added with its context, to listen to the event you make a call
+   * to Bucket.listen method passing the id of the event prefixing the
+   * event id with namespace, including the namespace id and the
+   * context gets passed to it e.g.
+   * assuming we listening to when App/Welcome context gets added
+   * Bucket.listen('namespace.add.App/Welcome', function(context){
+   *   context.prototype.log = new Logger();
+   * });
+   * 
+   * The create event gets triggered when the context gets instantiated
+   * The rules above applies to listening to the event, just that the 
+   * name of the event changes from add to create, and the instantiated
+   * copy gets passed to the listener e.g.
+   * Bucket.listen('namespace.create.App/Welcome', function(context){
+   *   context.response = 'Hello World'
+   * });
    *
    * @private property _Tree {Tree}
    * @private property _eventManger {EventManager}
@@ -36,7 +58,7 @@
    * @public method add
    * @public method toString
    * 
-   * @param Object {Tree}
+   * @param object {Tree}
    * @return void
    */
   window.Namespace = function(tree, eventManager){
