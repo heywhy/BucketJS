@@ -138,7 +138,7 @@
       parent.context = child;
     } else {parent = this.root}
     
-    var dependencies = parent.context.dependencies, dontLoad = [];
+    var dependencies = parent.context.dependencies;
     
     if (dependencies !== null) {
       require(dependencies);
