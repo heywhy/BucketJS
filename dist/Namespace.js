@@ -99,6 +99,9 @@
       'class': context,
       dependencies: dependencies
     };
+    
+    // triggers event add.namespaceid e.g. add.App\Welcome
+    this._eventManager.trigger('add.'+id[0], [context]);
   }
   
   /**
@@ -148,8 +151,13 @@
       });
       
       for (var i = nodes.length - 1; i > -1; --i) {
+        id = forwardslash(contexts[i].id);
+        
         if (contexts[i].class.length === 0) {
           contexts[i].class = new contexts[i].class;
+          // triggers event create.class
+          this._eventManager.trigger('create.'+id, [contexts[i].class]);
+          
         } else {
           var codes = "(function(){return new contexts[i].class(", endcode = ");})()";
           
@@ -171,6 +179,9 @@
           codes = codes.replace(/,$/, '') + endcode;
           
           contexts[i].class = eval(codes);
+          
+          // triggers event create.class
+          this._eventManager.trigger('create.'+id, [contexts[i].class]);
           
           for (k = 0; k < funcLen; k++) {
             arg.shift();
@@ -200,14 +211,18 @@
   Namespace.prototype._handle = function(klass, bucket){
     var len = klass.dependencies.length,
     args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
-    endcode = ");})()";
+    endcode = ");})()", id = forwardslash(klass.id);
     
     for (var i = 0; i < len; i++) {
       codes += "args["+i+"],";
     }
     codes = codes.replace(/,$/, '') + endcode;
     
-    return eval(codes);
+    var context = eval(codes);
+    // triggers event create.class
+    this._eventManager.trigger('create.'+id, [context]);
+    
+    return context;
   }
     
   /**

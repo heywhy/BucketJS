@@ -28,6 +28,9 @@
   window.backslash = function(string) {
     return string.replace(/\//g, '\\');
   };
+  window.forwardslash = function(string) {
+    return string.replace(/\\/g, '/');
+  };
   
   try {
     ajax = new XMLHttpRequest();
@@ -100,6 +103,7 @@
     for (var id = 0, len = files.length; id < len; id++) {
       var file = files[id];
       
+      // triggers event beforeload.file
       require.event.trigger('beforeload.'+file);
       
       /**
@@ -123,6 +127,7 @@
       }
       
       process(file);
+      // triggers event afterload.file
       require.event.trigger('afterload.'+files[id]);
       require[file] = true;
     }
@@ -138,7 +143,7 @@
   require.config = {base: 'app'};
   
   /**
-   * static require.setConfig
+   * static method require.setConfig
    * @param object
    * @return void
    */
@@ -149,5 +154,9 @@
     }
   }
   
+  /**
+   * static property event
+   * @var object {EventManager}
+   */
   require.event = new EventManager();
 })(this);

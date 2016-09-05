@@ -64,24 +64,72 @@
    * @return number // a token assigned to the listener
    */
   Bucket.listen = function(eventid, callback){
-    var event = eventid.split('.');
+    var event = eventid.split('.'), token;
     if (event[0].toLowerCase() === 'require') {
       event = event.splice(1).join('.')
-      require.event.listen(event, callback);
+      token = 'require'+require.event.listen(event, callback);
     } else if (event[0].toLowerCase() === 'namespace') {
       event = event.splice(1).join('.');
-      Bucket._space._eventManager.listen(event, callback);
+      token = 'namespace'+Bucket._space._eventManager.listen(event, callback);
     } else {
-      return Bucket.eventManager.listen(eventid, callback);
+      token = Bucket.eventManager.listen(eventid, callback);
     }
+    
+    return token;
   }
   
   /**
-   *
+   * static method trigger
+   * triggers an event, telling it listeners that an event has occured
+   * @param string
+   * @param array
+   * @return void
    */
   Bucket.trigger = function(event, arg){
     Bucket.eventManager.trigger(event, arg);
   }
+  
+  /**
+   * static method unListen
+   * removes a listener from its parent
+   *
+   * @param string
+   * @return string
+   */
+  Bucket.unListen = function(token){
+    var reply;
+    if (token.match(/^(namespace)/i) !== null) {
+      token = parseInt(token.replace(/^(namespace)/i, ''));
+      reply = Bucket._space._eventManager.unListen(token);
+    } else if (token.match(/^(require)/i) !== null) {
+      token = parseInt(token.replace(/^(require)/i, ''));
+      reply = require.event.unListen(token);
+    } else {
+      reply = Bucket.eventManager.unListen(token);
+    }
+    
+    return reply;
+  }
+  
+  /**
+   * static method addProperty
+   * it adds new properties to the prototype of the context
+   * @param function
+   * @param object
+   * @return function // the passed context
+   */
+  Bucket.addProperty = function(context, methods){
+    if (typeof context !== 'function') {
+      throw new Error('Bucket::addMethods expects first param to be function.');
+    }
+    
+    for (var i in methods) {
+      context.prototype[i] = methods[i];
+    }
+    
+    return context;
+  }
+  
   /**
    * @var function // an alias to Bucket
    */
