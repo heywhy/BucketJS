@@ -18,3 +18,17 @@ version 0.1.1:
 --* });
 * added variable B as alias to Bucket for conviniences
 * well descriptive comments updated.
+
+version 0.1.3:
+* added some events
+--* namespace
+  --* add.namespaceid
+  --* create.namespaceid
+--* require
+  --* beforeload.namespaceid
+  --* afterload.namespaceid
+* added event system to Bucket
+--* Bucket.listen(event, callback);
+--* Bucket.trigger(event, arguments);
+--* Bucket.unListen(listener);
+
