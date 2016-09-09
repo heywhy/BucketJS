@@ -105,7 +105,60 @@ B({
   filters: {
     'App': 'moblie/src'
   }
-})
+});
+
+/**
+ * changes prior to version 0.1.3:
+ * Bucket.addProperty(context, properties);
+ * added some events
+ * namespace events
+ * -- add.namespaceid
+ * -- create.namespaceid
+ * require events
+ * -- beforeload.namespaceid
+ * -- afterload.namespaceid
+ * added event system to Bucket
+ * -- Bucket.listen(event, callback);
+ * -- Bucket.trigger(event, arguments);
+ * -- Bucket.unListen(listener);
+ */
+/**
+ * function Bucket.addProperty(context: function, propeties: object):context
+ * function Bucket.listen(event: string, callback: function):string
+ * function Bucket.trigger(event: string):void
+ * function Bucket.unListen(token: string):void
+ */
+// require event examples
+B.listen('require.beforeload.App/Core/Bye', function(){
+  //
+});
+B.listen('require.afterload.App/Core/hello', function(){
+  //
+});
+
+// namespace events examples
+// the argument passed to the callback is the function defined under the namespace
+B.listen('namespace.add.App/Core/Hello', function(context){
+  /**
+   * lets add some new properties to the prototype of context
+   */
+  B.addProperty(context, {
+    user: 'BucketJS',
+    end: function(){
+      alert('call ended...');
+    }
+  });
+});
+
+var greet = B('App/Core/Hello');
+greet.end(); // => 'call ended...'
+
+// the argument passed to the callback is the instantiated copy of the function defined under the namespace
+B.listen('namespace.create.App/Core/Bye', function(context){
+  // the property can be accessed by the context depending on them
+  Bye.user = 'BucketJS'
+});
+
 ```
 
 Some features has been added prior to version 0.1.1, you can check the

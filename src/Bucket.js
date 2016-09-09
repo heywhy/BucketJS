@@ -674,12 +674,13 @@
   
   /**
    * static property _space
-   * @property object
+   * @property object {Namespace}
    */
   Bucket._space = new Namespace(new Tree(), new EventManager());
   
   /**
-   *
+   * static property eventManager
+   * @property object {EventManager}
    */
   Bucket.eventManager = new EventManager();
   /**
@@ -755,6 +756,11 @@
     
     return context;
   }
+
+  /**
+   * static method extend
+   * used for extending an object or a function prototye
+   */
   
   /**
    * @var function // an alias to Bucket
