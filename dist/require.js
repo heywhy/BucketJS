@@ -111,14 +111,20 @@
        * right path specified by the filter
        */
       if (require.config.filters !== undefined) {
+        var aliased = false;
         for (var filter in config.filters) {
           var regex = new RegExp("^("+filter+")", "i"),
           src = config.filters[filter].replace(/^\//, '').replace(/\/$/, '');
           
           if (regex.test(file)) {
             file = file.replace(regex, '/'+src);
+            aliased = true;
             break;
           }
+        }
+
+        if (!aliased) {
+            file = '/'+require.config.base+'/'+file;
         }
       }
       

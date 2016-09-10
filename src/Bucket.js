@@ -659,7 +659,7 @@
    */
     
   window.Bucket = function(id, context){
-    if (typeof id === 'string') {
+    if (typeof id === 'string' && context === undefined) {
       require([id]);
       
       return Bucket._space.get(id);

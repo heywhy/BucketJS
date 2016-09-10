@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <meta name='viewport' content='width=device-width'>
+        <link href="./app/css/main.css" rel='stylesheet' type="text/css">
+    </head>
+    <body>
+         <div class='container'>
+             <span class='block help'>What do i want to do?</span>
+             <div id='collector' class="collector" contenteditable="true"></div>
+             <div class="text-right">
+                 <button id='reset-btn' class="save-btn">Reset</button>
+                 <button id='save-btn' class="save-btn">Save</button>
+             </div>
+             <div id='appView'></div>
+         </div>
+         <script src='../dist/namespace.js'></script>
+         <script src='../dist/tree.js'></script>
+         <script src='../dist/eventmanager.js'></script>
+         <script src='../dist/require.js'></script>
+         <script src='../dist/bucket.js'></script>
+         <script>
+             'use strict';
+             B({base: 'app/src', filters: {
+                 'Bucket': 'app/src/core'
+               }
+             });
+             
+             var app = B('App');
+             app.init();
+         </script>
+    </body>
+</html>
