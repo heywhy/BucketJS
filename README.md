@@ -10,6 +10,7 @@
 * trying to implement Namespacing in the other languages
 * Include the src/Bucket.js file in your page and you are set to use it.
 * The dist directory consists of the different aspects implemented into the library
+* An app example as been added prior to version 0.1.5 under the app folder which will be improved on over time
 
 it is very simple to use
 ```javascript

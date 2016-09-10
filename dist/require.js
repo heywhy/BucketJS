@@ -91,7 +91,7 @@
    */
   window.require = function(files) {
     if (files === undefined || !Array.isArray(files)) {
-      throw new TypeError('require expects first param to be an array.')
+      throw new Error('require expects first param to be an array.')
     }
     
     if (require.cache === undefined) {

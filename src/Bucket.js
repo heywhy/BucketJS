@@ -70,7 +70,7 @@
     }
     
     if (!(this._Tree instanceof Tree)) {
-      throw new TypeError("class Namespace constructor expects param to be an instance of Tree");
+      throw new Error("class Namespace constructor expects param to be an instance of Tree");
     }
     
     if (this._eventManager === undefined) {
@@ -78,7 +78,7 @@
     }
     
     if (!(this._eventManager instanceof EventManager)) {
-      throw new TypeError("class Namespace constructor expects second param to be an instance of EventManager");
+      throw new Error("class Namespace constructor expects second param to be an instance of EventManager");
     }
     
     this._bucket = {};
@@ -94,11 +94,11 @@
    */
   Namespace.prototype.add = function(id, context) {
     if (!Array.isArray(id)) {
-      throw new TypeError('method Namespace::add expects first param to be of type array');
+      throw new Error('method Namespace::add expects first param to be of type array');
     }
     
     if (typeof context !== 'function') {
-      throw new TypeError('method Namespace::add expects second param to be of type function');
+      throw new Error('method Namespace::add expects second param to be of type function');
     }
     
     /**
@@ -581,7 +581,7 @@
    */
   var require = function(files) {
     if (files === undefined || !Array.isArray(files)) {
-      throw new TypeError('require expects first param to be an array.')
+      throw new Error('require expects first param to be an array.')
     }
     
     if (require.cache === undefined) {
