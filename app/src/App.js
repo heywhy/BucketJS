@@ -30,7 +30,7 @@ B(['App', ['Bucket/Cache']], function(Cache){
      * 
      * @return void
      */
-    this.save = function(event){
+    this.save = function(){
         var content = collector.innerHTML, self = this,
         todo = {
             id: self.counter,
