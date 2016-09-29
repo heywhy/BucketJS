@@ -1,7 +1,7 @@
 {
     "name": "heywhy/bucketjs",
     "type": "library",
-    "description": "It helps in managing and keeping your codes|projects well organized",
+    "description": "It helps in managing and keeping your codes|projects well organized by trying to implement an advance feature in other languages which is namespacing.",
     "keywords": ["js", "namespace", "library", "bucketjs", "bucket"],
     "homepage": "https://heywhy.github.io/BucketJS/",
     "license": "MIT",
