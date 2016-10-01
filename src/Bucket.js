@@ -87,7 +87,7 @@ var Bucket = (function(window, undefined){
           children: []
         };
       }
-
+      
       // If there is no root, just set it to the new node.
       if (this._root === null) {
         this._root = newNode;
@@ -153,8 +153,8 @@ var Bucket = (function(window, undefined){
       var dependencies = parent.context.dependencies;
 
       if (dependencies !== null) {
+        Load(dependencies);
         for (var i = 0, len = dependencies.length; i < len; i++) {
-          Load(dependencies);
           var id = backslash(dependencies[i]);
 
           var context = this._bucket[id]();
@@ -164,10 +164,9 @@ var Bucket = (function(window, undefined){
           this.add(context, parent.value);
         }
       }
-
-      for (i = 0, len = this._searched.length - 1; i <= len; i++) {
+      len = this._searched.length;
+      if (len > 0) {
         var contexty = this._searched.shift();
-        --len;
         this.process(contexty);
       }
     };
@@ -475,21 +474,24 @@ var Bucket = (function(window, undefined){
             // we build the codes to be evaluated with the eval function
             var codes = "(function(){return new contexts[i].class(", endcode = ");})()";
 
-            for (var j = 0, len = contexts[i].dependencies.length; j < len; j++) {
-              var hey = contexts[i].dependencies, contextid = backslash(hey[j]),
-                index = nodes.indexOf(contextid), funcLen = contexts[i].class.length;
+            if (contexts[i].dependencies) {
+              var len = contexts[i].dependencies.length;
+              for (var j = 0; j < len; j++) {
+                var hey = contexts[i].dependencies, contextid = backslash(hey[j]),
+                  index = nodes.indexOf(contextid), funcLen = contexts[i].class.length;
 
-              if (typeof contexts[index].class === "function") {
-                /**
-                 * we really can't tell if this can happen but prevention
-                 * is better than cure
-                 */
-                contexts[index].class = this._handle(contexts[index], arg);
+                if (typeof contexts[index].class === "function") {
+                  /**
+                   * we really can't tell if this can happen but prevention
+                   * is better than cure
+                   */
+                  contexts[index].class = this._handle(contexts[index], arg);
+                }
+
+                arg.push(contexts[index].class);
               }
-
-              arg.push(contexts[index].class);
             }
-
+            
             for (var k = 0; k < funcLen; k++) {
               codes += "arg["+k+"],";
             }
@@ -909,7 +911,6 @@ var Bucket = (function(window, undefined){
         files = [files];
       }
       var config = null;
-
       for (var id = 0, len = files.length; id < len; id++) {
         var file = files[id], filtered = false;
         // triggers event beforeload.file
