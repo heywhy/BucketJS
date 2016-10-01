@@ -154,9 +154,10 @@ var Bucket = (function(window, undefined){
 
       if (dependencies !== null) {
         for (var i = 0, len = dependencies.length; i < len; i++) {
+          Load(dependencies);
           var id = backslash(dependencies[i]);
 
-          var context = this.bucket[id]();
+          var context = this._bucket[id]();
           context.value = context.id;
           context.children = [];
           this._searched.push(context);
@@ -412,13 +413,7 @@ var Bucket = (function(window, undefined){
       };
 
       // triggers event add.namespaceid e.g. add.App\Welcome
-      this._eventManager.trigger("add."+id[0], [context]);
-
-      // here we load the context's dependencies immediately
-      // so as to give it some fast head
-      if (dependencies !== null) {
-        Load(dependencies);
-      }
+      this._eventManager.trigger("add." + id[0], [context]);
     };
 
     /**

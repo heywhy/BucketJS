@@ -130,13 +130,7 @@ var Namespace = (function(){
     };
 
     // triggers event add.namespaceid e.g. add.App\Welcome
-    this._eventManager.trigger("add."+id[0], [context]);
-
-    // here we load the context's dependencies immediately
-    // so as to give it some fast head
-    if (dependencies !== null) {
-      Load(dependencies);
-    }
+    this._eventManager.trigger("add." + id[0], [context]);
   };
 
   /**

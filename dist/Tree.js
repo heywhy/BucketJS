@@ -29,9 +29,9 @@ var Tree = (function(){
    * this helps in building a cute tree (Binary Tree kinda)
    * to help process dependencies loading in the right order
    *
-   * @private property root
-   * @private property bucket
-   * @private property searched {array}
+   * @private property _root
+   * @private property _bucket
+   * @private property _searched {array}
    *
    * @public method setRoot
    * @public method clear
@@ -153,9 +153,10 @@ var Tree = (function(){
 
     if (dependencies !== null) {
       for (var i = 0, len = dependencies.length; i < len; i++) {
+        Load(dependencies);
         var id = backslash(dependencies[i]);
 
-        var context = this.bucket[id]();
+        var context = this._bucket[id]();
         context.value = context.id;
         context.children = [];
         this._searched.push(context);
