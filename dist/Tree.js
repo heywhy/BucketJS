@@ -1,6 +1,6 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2016 atanda rasheed
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-(function(window, undefined){
+/*eslint no-undef: off*/
+/*eslint no-unused-vars: off*/
+var Tree = (function(){
   /**
    * Class Tree
    * this helps in building a cute tree (Binary Tree kinda)
@@ -42,40 +43,42 @@
    *
    * @return void
    */
-  window.Tree = function(){
-    this.root = null;
-    this.searched = [];
-  }
-  
+  var Tree = function(){
+    this._root = null;
+    this._searched = [];
+    this._bucket = null;
+  };
+
   /**
-   * Method traverse
-   * it helps in traversing every nodes
+   * traverse method
+   * it traverses every nodes on the tree
    *
    * @param function
+   *
    * @return void
    */
   Tree.prototype.traverse = function(callback){
-    /**
-     * We'll define a walk function that we can call recursively on every node
-     */
+    // We'll define a walk function that we can call recursively on every node
     function walk(node) {
       callback(node);
       node.children.forEach(walk);
     }
 
-    walk(this.root);
-  }
-  
+    walk(this._root);
+  };
+
   /**
-   * Method add
-   * for adding a child to a parent node
+   * add method
+   * it adds a child node to its parent node
    *
    * @param object
+   * @param string
+   *
    * @return void
    */
   Tree.prototype.add = function(value, parentValue){
     var newNode;
-    if (typeof value === 'object') {
+    if (typeof value === "object") {
       newNode = value;
     } else {
       newNode = {
@@ -83,10 +86,11 @@
         children: []
       };
     }
-    
+
     // If there is no root, just set it to the new node.
-    if (this.root === null) {
-      this.root = newNode;
+    if (this._root === null) {
+      this._root = newNode;
+
       return;
     }
 
@@ -97,87 +101,95 @@
         node.children.push(newNode);
       }
     });
-  }
-  
+  };
+
   /**
-   * Method setBucket
+   * setBucket method
    * sets the bucket where the children gets fetched
-   * return void
+   *
+   * @param object {Namespace::_bucket}
+   *
+   * @return void
    */
   Tree.prototype.setBucket = function(bucket){
-    this.bucket = bucket;
-  }
-  
+    this._bucket = bucket;
+  };
+
   /**
-   * Method setRoot
+   * setRoot method
    * sets the root of the tree to be built
-   * 
+   *
    * @param object
+   *
    * @return void
    */
   Tree.prototype.setRoot = function(root){
-    this.root = {
+    root = root();
+    this._root = {
       value: root.id,
       context: root,
       children: []
     };
-  }
-  
+  };
+
   /**
-   * Method process
-   * it proccesses every node by adding them to their respective parents
+   * process method
+   * it proccesses every node, adding them to their respective parents
+   * by making call to the add method
    *
    * @param object
+   *
    * @return void
    */
   Tree.prototype.process = function(child){
     var parent;
-    
+
     if (child !== undefined) {
       parent = child;
       parent.context = child;
-    } else {parent = this.root}
-    
+    } else {parent = this._root;}
+
     var dependencies = parent.context.dependencies;
-    
+
     if (dependencies !== null) {
-      require(dependencies);
-    
       for (var i = 0, len = dependencies.length; i < len; i++) {
         var id = backslash(dependencies[i]);
-        
-        var context = this.bucket[id];
-        context.value = context.id
+
+        var context = this.bucket[id]();
+        context.value = context.id;
         context.children = [];
-        this.searched.push(context);
+        this._searched.push(context);
         this.add(context, parent.value);
       }
     }
-    
-    for (i = 0, len = this.searched.length - 1; i <= len; i++) {
-      var contexty = this.searched.shift();
+
+    for (i = 0, len = this._searched.length - 1; i <= len; i++) {
+      var contexty = this._searched.shift();
       --len;
       this.process(contexty);
     }
-  }
-  
+  };
+
   /**
-   * Method clear
+   * clear method
    * it clears the tree by setting the root to null
-   * @return void
+   *
+   *  @return void
    */
   Tree.prototype.clear = function(){
-    this.root = null;
-  }
-  
+    this._root = null;
+  };
+
   /**
-   * Method toString
-   * so that it can give a much more descriptive information
+   * toString method
+   * it gives a much more descriptive information
    * when trying to output it as a string
-   * @return void
+   *
+   * @return string
    */
   Tree.prototype.toString = function(){
-    return 'Tree::class';
-  }
+    return "Tree::class";
+  };
 
-})(window)
+  return Tree;
+})();
