@@ -280,5 +280,24 @@ var Load =  (function() {
     }
   };
 
+  /**
+   * static method require
+   * loads a file without adding a filter to it
+   * @param array
+   *
+   * @return array
+   */
+  require.require = function(files){
+    var length = files.length, i = 0, texts = [];
+
+    for (; i < length; ++i) {
+      process(files[i], true);
+      texts.push(codes);
+      codes = "";
+    }
+
+    return texts;
+  };
+
   return require;
 })();

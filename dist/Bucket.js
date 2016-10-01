@@ -118,6 +118,42 @@ var Bucket = (function(window, undefined){
   };
 
   /**
+   * static method burstAllCache
+   * deletes every property of object CacheLogger
+   *
+   * @return bool
+   */
+  Bucket.burstAllCache = function(){
+    localStorage.removeItem("CacheLogger");
+    localStorage.setItem("CacheLogger", JSON.stringify({"CacheLogger": []}));
+  };
+
+  /**
+   * static method getCacheSystem
+   *
+   * @return object {Cache}
+   */
+  Bucket.getCacheSystem =  function(){
+    return new Cache();
+  };
+
+  /**
+   * static method load
+   * loads a file from the server and evaluates it
+   *
+   * @param string|array
+   *
+   * @return void
+   */
+  Bucket.load = function(files){
+    if (typeof files == "string") {
+      files = [files];
+    }
+
+    return Load.require(files);
+  };
+
+  /**
    * @var function {Bucket}
    * an alias to bucket for conviniences
    */
