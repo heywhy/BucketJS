@@ -79,7 +79,7 @@ Bucket(['App/Core/Bye'], function(){
   }
 });
 
-// file: www/index.html including the library
+// file: webroot/index.html including the library
 // to get the instantiated copy
 var app = Bucket('App/Core/Welcome');
 app.welcome(); // => 'hello world'
@@ -117,7 +117,7 @@ B({
  * namespace events
  * -- add.namespaceid
  * -- create.namespaceid
- * require events
+ * load events
  * -- beforeload.namespaceid
  * -- afterload.namespaceid
  * added event system to Bucket
