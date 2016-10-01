@@ -1036,17 +1036,17 @@ var Bucket = (function(window, undefined){
         } else {
           throw new Error("Invalid automated cache expire time given.");
         }
-      }
 
-      if (CacheManager.retrieve("Cache") == null) {
-        CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
-      }
+        if (CacheManager.retrieve("Cache") == null) {
+          CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
+        }
 
-      var time = CacheManager.retrieve("Cache").value;
+        var time = CacheManager.retrieve("Cache").value;
 
-      if (time.expires <= now.getTime()) {
-        this.burstCache();
-        CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
+        if (time.expires <= now.getTime()) {
+          this.burstCache();
+          CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
+        }
       }
     };
 
