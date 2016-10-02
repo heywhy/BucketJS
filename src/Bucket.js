@@ -87,7 +87,7 @@ var Bucket = (function(window, undefined){
           children: []
         };
       }
-      
+
       // If there is no root, just set it to the new node.
       if (this._root === null) {
         this._root = newNode;
@@ -491,7 +491,7 @@ var Bucket = (function(window, undefined){
                 arg.push(contexts[index].class);
               }
             }
-            
+
             for (var k = 0; k < funcLen; k++) {
               codes += "arg["+k+"],";
             }
@@ -862,7 +862,7 @@ var Bucket = (function(window, undefined){
        * if cache is enabled we try fetching from it instead of going to the server,
        * we will make a request to the server only if the cache has been busted
        */
-      if (requireConfig.cache) {
+      if (requireConfig.cache.automate) {
         if (CacheManager.retrieve(HOST + file) != null) {
           codes += "\n" + CacheManager.retrieve(HOST + file).value;
 
@@ -876,7 +876,7 @@ var Bucket = (function(window, undefined){
             codes += "\n" + ajax.responseText+"";
             requestError = false;
 
-            if (requireConfig.cache) {
+            if (requireConfig.cache.automate) {
               CacheManager.store(url, ajax.responseText);
             }
           } else {

@@ -95,7 +95,7 @@ var Load =  (function() {
      * if cache is enabled we try fetching from it instead of going to the server,
      * we will make a request to the server only if the cache has been busted
      */
-    if (requireConfig.cache) {
+    if (requireConfig.cache.automate) {
       if (CacheManager.retrieve(HOST + file) != null) {
         codes += "\n" + CacheManager.retrieve(HOST + file).value;
 
@@ -109,7 +109,7 @@ var Load =  (function() {
           codes += "\n" + ajax.responseText+"";
           requestError = false;
 
-          if (requireConfig.cache) {
+          if (requireConfig.cache.automate) {
             CacheManager.store(url, ajax.responseText);
           }
         } else {
@@ -266,7 +266,7 @@ var Load =  (function() {
       } else {
         throw new Error("Invalid automated cache expire time given.");
       }
-      
+
       if (CacheManager.retrieve("Cache") == null) {
         CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
       }
