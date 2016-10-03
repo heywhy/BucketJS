@@ -118,7 +118,7 @@ var Namespace = (function(){
        * when trying to output it as a string
        */
     context.prototype.toString = function(){
-      return contextid+"::class";
+      return contextid + "::class";
     };
 
     this._bucket[contextid] = function() {
@@ -205,18 +205,20 @@ var Namespace = (function(){
                    */
                 contexts[index].class = this._handle(contexts[index], arg);
               }
-
               arg.push(contexts[index].class);
             }
           }
 
-          for (var k = 0; k < funcLen; k++) {
-            codes += "arg["+k+"],";
+          if (arg.length > 0) {
+            for (var k = 0; k < funcLen; k++) {
+              codes += "arg["+k+"],";
+            }
           }
 
-          codes = codes.replace(/,$/, "") + endcode;
-
-          contexts[i].class = eval(codes);
+          if (typeof contexts[i].class == "function") {
+            codes = codes.replace(/,$/, "") + endcode;
+            contexts[i].class = eval(codes);
+          }
 
             // triggers event create.class
           this._eventManager.trigger("create." + id, [contexts[i].class]);
@@ -250,17 +252,20 @@ var Namespace = (function(){
      * @return object
      */
   Namespace.prototype._handle = function(klass, bucket){
-    var len = klass.dependencies.length,
-      args = bucket.splice(0, len), codes = "(function(){return new klass.class(",
+    var dependencies = klass.dependencies,
+      len = dependencies ? dependencies.length : null,
+      args = len ? bucket.splice(0, len) : null, codes = "(function(){return new klass.class(",
       endcode = ");})()", id = forwardslash(klass.id);
 
-    for (var i = 0; i < len; i++) {
-      codes += "args["+i+"],";
+    if (dependencies && len > 0) {
+      for (var i = 0; i < len; i++) {
+        codes += "args[" + i + "],";
+      }
     }
     codes = codes.replace(/,$/, "") + endcode;
     var context = eval(codes);
       // triggers event create.class
-    this._eventManager.trigger("create."+id, [context]);
+    this._eventManager.trigger("create." + id, [context]);
 
     return context;
   };
