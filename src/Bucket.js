@@ -379,7 +379,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Namespace.prototype.add = function(id, context) {
+    Namespace.prototype.add = function(id, context, prototype) {
       if (!Array.isArray(id)) {
         throw new Error("method Namespace::add expects first param to be of type array");
       }
@@ -393,6 +393,11 @@ var Bucket = (function(window, undefined){
        * e.g. App/Core/Auth => App\Core\Auth
        */
       var contextid = backslash(id[0]), dependencies = id[1] || null;
+
+      if (prototype && typeof prototype === "object") {
+        context.prototype = prototype;
+        context.prototype.constructor = context;
+      }
 
       /**
        * we add a toString method to every context saved,
@@ -878,7 +883,7 @@ var Bucket = (function(window, undefined){
       var requestError = false,
         callback = function(event) {
           if (ajax.readyState === 4 && ajax.status === 200) {
-            codes += "\n" + ajax.responseText+"";
+            codes += "\n// " + url + "\n" + ajax.responseText+"";
             requestError = false;
 
             if (requireConfig.cache.automate) {
@@ -1087,13 +1092,13 @@ var Bucket = (function(window, undefined){
      * @return void|object
      */
 
-    var Bucket = function(id, context){
+    var Bucket = function(id, context, prototype){
       if (typeof id === "string" && context === undefined) {
         Load([id]);
         return Space.get(id);
       }
       else if (Array.isArray(id) && typeof context === "function") {
-        Space.add(id, context);
+        Space.add(id, context, prototype);
       }
       else if (typeof id === "object") {
         Load.setConfig(id);

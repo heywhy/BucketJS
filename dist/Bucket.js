@@ -23,7 +23,8 @@
  */
 /*eslint no-undef: off*/
 /*eslint no-unused-vars: off*/
-var Bucket = (function(window, undefined){
+// @var function
+var Bucket = (function (window, undefined) {
   // @var object {Namespace}
   var Space = new Namespace(new Tree(), new EventManager()),
     // @var object {EventManager}
@@ -34,16 +35,19 @@ var Bucket = (function(window, undefined){
    * its a basic facade to the underlying core of the
    * library
    *
+   * @param array|string|object
+   * @param function
+   * @param object|undefined
+   *
    * @return void|object
    */
-
-  var Bucket = function(id, context){
+  var Bucket = function (id, context, prototype) {
     if (typeof id === "string" && context === undefined) {
       Load([id]);
       return Space.get(id);
     }
     else if (Array.isArray(id) && typeof context === "function") {
-      Space.add(id, context);
+      Space.add(id, context, prototype);
     }
     else if (typeof id === "object") {
       Load.setConfig(id);
@@ -55,11 +59,11 @@ var Bucket = (function(window, undefined){
    * it adds a listener to an event
    *
    * @param string // name of the event to listen to
-   * @param function // the funct8on that gets excuted when the event occurs
+   * @param function // the function that gets excuted when the event occurs
    *
-   *  @return number // a token assigned to the listener
+   * @return string // a token assigned to the listener
    */
-  Bucket.listen = function(eventid, callback){
+  Bucket.listen = function (eventid, callback) {
     var event = eventid.split("."), token;
     if (event[0].toLowerCase() === "load") {
       event = event.splice(1).join(".");
@@ -76,29 +80,33 @@ var Bucket = (function(window, undefined){
 
   /**
    * static method trigger
-   * triggers an event, telling it listeners that an event has occured
+   * triggers an event, telling it listeners that the event has occured,
+   * internal events cannot be triggered
+   *
    * @param string
    * @param array
+   *
    * @return void
    */
-  Bucket.trigger = function(event, arg){
+  Bucket.trigger = function (event, arg) {
     Event.trigger(event, arg);
   };
 
   /**
    * static method unListen
-   * removes a listener from its parent
+   * removes a listener from an event which it registered to
    *
    * @param string
+   *
    * @return string
    */
-  Bucket.unListen = function(token){
+  Bucket.unListen = function (token) {
     var reply;
     if (token.match(/^(namespace)/i) !== null) {
       token = parseInt(token.replace(/^(namespace)/i, ""));
       reply = Space.unListen(token);
     } else if (token.match(/^(load)/i) !== null) {
-      token = parseInt(token.replace(/^(require)/i, ""));
+      token = parseInt(token.replace(/^(load)/i, ""));
       reply = Load.unListen(token);
     } else {
       reply = Event.unListen(token);
@@ -111,41 +119,45 @@ var Bucket = (function(window, undefined){
    * static method burstCache
    * it bursts the cache system use by Load
    *
-   * @return boolean
+   * @return bool
    */
-  Bucket.burstCache = function(){
+  Bucket.burstCache = function () {
     return Load.burstCache();
   };
 
   /**
    * static method burstAllCache
-   * deletes every property of object CacheLogger
+   * deletes every property of object CacheLogger and resets it.
    *
    * @return bool
    */
-  Bucket.burstAllCache = function(){
+  Bucket.burstAllCache = function () {
     localStorage.removeItem("CacheLogger");
-    localStorage.setItem("CacheLogger", JSON.stringify({"CacheLogger": []}));
+    localStorage.setItem("CacheLogger", JSON.stringify({ "CacheLogger": [] }));
   };
 
   /**
    * static method getCacheSystem
+   * get a cache system that can be reused in another application built
+   * on this library
    *
    * @return object {Cache}
    */
-  Bucket.getCacheSystem =  function(){
+  Bucket.getCacheSystem = function () {
     return new Cache();
   };
 
   /**
    * static method load
-   * loads a file from the server and evaluates it
+   * loads the contents of a file from the server without evaluating it,
+   * it can be used to fetch the content of a css, js or any text file in a
+   * synchronous manner.
    *
    * @param string|array
    *
    * @return void
    */
-  Bucket.load = function(files){
+  Bucket.load = function (files) {
     if (typeof files == "string") {
       files = [files];
     }

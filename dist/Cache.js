@@ -23,6 +23,7 @@
  */
 /*eslint no-undef: off*/
 /*eslint no-unused-vars: off*/
+// @var function
 var Cache = (function(window, undefined){
   /**
    * @var number
@@ -30,8 +31,10 @@ var Cache = (function(window, undefined){
    * the data each stores doesn't conflicts with other object of Cache
    */
   var instantiated = 0;
+
   /**
    * class Cache
+   *
    * Used to cache the contents of a file after it has been loaded
    * by the Load.js
    * After a file has been loaded for the first time it caches the files,
@@ -39,11 +42,21 @@ var Cache = (function(window, undefined){
    * fetched from the browser to reduce load time of the app and it
    * can be reused by other parts of the app
    *
-   * @private property _log
    * @private property _storage
    * @public property length
+   * @public property id
    *
-   * @return void
+   * @private method _log
+   * @private method _get
+   * @private method _set
+   *
+   * @public method store
+   * @public method retrieve
+   * @public method delete
+   * @public method consume
+   * @public method clear
+   * @public method getAll
+   * @public method toString
    */
   var Cache = function(){
     this.length = 0;

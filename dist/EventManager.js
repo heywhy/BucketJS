@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 /*eslint no-unused-vars: off*/
+// @var function
 var EventManager = (function(window, undefined){
   /**
    * class EventManager
@@ -31,11 +32,11 @@ var EventManager = (function(window, undefined){
    *
    * @private property _events
    * @private property _token
+   *
    * @public method listen
    * @public method trigger
    * @public method unListen
-   *
-   * @return void
+   * @public method toString
    */
   var EventManager = function(){
     this._events = {};
@@ -48,7 +49,6 @@ var EventManager = (function(window, undefined){
    *
    * @param string   // name of the event
    * @param function // the function that gets called when the event occurs
-   * @param number   // token to use when unlistening to an event
    *
    * @return number
    */
