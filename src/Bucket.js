@@ -23,16 +23,19 @@
  */
 /*eslint no-undef: off*/
 /*eslint no-unused-vars: off*/
+// @var function
 var Bucket = (function(window, undefined){
-  var Tree = (function(){
+  // @var function
+  var Tree = (function () {
     /**
      * Class Tree
+     *
      * this helps in building a cute tree (Binary Tree kinda)
      * to help process dependencies loading in the right order
      *
-     * @private property root
-     * @private property bucket
-     * @private property searched {array}
+     * @private property _root
+     * @private property _bucket
+     * @private property _searched {array}
      *
      * @public method setRoot
      * @public method clear
@@ -41,10 +44,8 @@ var Bucket = (function(window, undefined){
      * @public method traverse
      * @public method process
      * @public method toString
-     *
-     * @return void
      */
-    var Tree = function(){
+    var Tree = function () {
       this._root = null;
       this._searched = [];
       this._bucket = null;
@@ -58,7 +59,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Tree.prototype.traverse = function(callback){
+    Tree.prototype.traverse = function (callback) {
       // We'll define a walk function that we can call recursively on every node
       function walk(node) {
         callback(node);
@@ -77,7 +78,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Tree.prototype.add = function(value, parentValue){
+    Tree.prototype.add = function (value, parentValue) {
       var newNode;
       if (typeof value === "object") {
         newNode = value;
@@ -97,7 +98,7 @@ var Bucket = (function(window, undefined){
 
       // Otherwise traverse the entire tree and find a node with a matching value
       // and add the new node to its children.
-      this.traverse(function(node) {
+      this.traverse(function (node) {
         if (node.value === parentValue) {
           node.children.push(newNode);
         }
@@ -112,7 +113,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Tree.prototype.setBucket = function(bucket){
+    Tree.prototype.setBucket = function (bucket) {
       this._bucket = bucket;
     };
 
@@ -124,7 +125,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Tree.prototype.setRoot = function(root){
+    Tree.prototype.setRoot = function (root) {
       root = root();
       this._root = {
         value: root.id,
@@ -136,23 +137,25 @@ var Bucket = (function(window, undefined){
     /**
      * process method
      * it proccesses every node, adding them to their respective parents
-     * by making call to the add method
+     * by making call to the add method, this method is only used with the
+     * Namespace object
      *
      * @param object
      *
      * @return void
      */
-    Tree.prototype.process = function(child){
+    Tree.prototype.process = function (child) {
       var parent;
 
       if (child !== undefined) {
         parent = child;
         parent.context = child;
-      } else {parent = this._root;}
+      } else { parent = this._root; }
 
       var dependencies = parent.context.dependencies;
 
       if (dependencies !== null) {
+        // we fetch the dependencies and evealuates it
         Load(dependencies);
         for (var i = 0, len = dependencies.length; i < len; i++) {
           var id = backslash(dependencies[i]);
@@ -177,7 +180,7 @@ var Bucket = (function(window, undefined){
      *
      *  @return void
      */
-    Tree.prototype.clear = function(){
+    Tree.prototype.clear = function () {
       this._root = null;
     };
 
@@ -188,14 +191,15 @@ var Bucket = (function(window, undefined){
      *
      * @return string
      */
-    Tree.prototype.toString = function(){
+    Tree.prototype.toString = function () {
       return "Tree::class";
     };
 
     return Tree;
   })();
 
-  var EventManager = (function(window, undefined){
+  // @var function
+  var EventManager = (function (window, undefined) {
     /**
      * class EventManager
      *
@@ -204,13 +208,13 @@ var Bucket = (function(window, undefined){
      *
      * @private property _events
      * @private property _token
+     *
      * @public method listen
      * @public method trigger
      * @public method unListen
-     *
-     * @return void
+     * @public method toString
      */
-    var EventManager = function(){
+    var EventManager = function () {
       this._events = {};
       this._token = 0;
     };
@@ -221,11 +225,10 @@ var Bucket = (function(window, undefined){
      *
      * @param string   // name of the event
      * @param function // the function that gets called when the event occurs
-     * @param number   // token to use when unlistening to an event
      *
      * @return number
      */
-    EventManager.prototype.listen = function(event, callback){
+    EventManager.prototype.listen = function (event, callback) {
       if (!this._events[event]) {
         this._events[event] = [];
       }
@@ -247,7 +250,7 @@ var Bucket = (function(window, undefined){
      *
      * @return this
      */
-    EventManager.prototype.trigger = function(event, arg){
+    EventManager.prototype.trigger = function (event, arg) {
       if (!this._events[event]) {
         return false;
       }
@@ -272,7 +275,7 @@ var Bucket = (function(window, undefined){
      *
      * @return this|number // EventManager|token
      */
-    EventManager.prototype.unListen = function(token){
+    EventManager.prototype.unListen = function (token) {
       for (var event in this._events) {
         if (this._events[event]) {
           var listeners = this._events[event];
@@ -297,7 +300,7 @@ var Bucket = (function(window, undefined){
      *
      * @return string
      */
-    EventManager.prototype.toString = function(){
+    EventManager.prototype.toString = function () {
       return "EventManager::class";
     };
 
@@ -305,7 +308,8 @@ var Bucket = (function(window, undefined){
     return EventManager;
   })(this);
 
-  var Namespace = (function(){
+  // @var function
+  var Namespace = (function () {
     /**
      * Class Namespace
      *
@@ -344,10 +348,8 @@ var Bucket = (function(window, undefined){
      *
      * @param object {Tree}
      * @param object {EventManager}
-     *
-     * @return void
      */
-    var Namespace = function(tree, eventManager){
+    var Namespace = function (tree, eventManager) {
       this._Tree = tree;
       this._eventManager = eventManager;
 
@@ -372,14 +374,15 @@ var Bucket = (function(window, undefined){
 
     /**
      * add method
-     * adds the new context to the existing bucket
+     * adds the new context to the existing bucket, so that it can
+     * be fetched when needed.
      *
      * @param array
      * @param function
      *
      * @return void
      */
-    Namespace.prototype.add = function(id, context, prototype) {
+    Namespace.prototype.add = function (id, context, prototype) {
       if (!Array.isArray(id)) {
         throw new Error("method Namespace::add expects first param to be of type array");
       }
@@ -404,11 +407,11 @@ var Bucket = (function(window, undefined){
        * so that it can give a much more descriptive information
        * when trying to output it as a string
        */
-      context.prototype.toString = function(){
+      context.prototype.toString = function () {
         return contextid + "::class";
       };
 
-      this._bucket[contextid] = function() {
+      this._bucket[contextid] = function () {
         return {
           id: contextid,
           "class": context,
@@ -422,14 +425,14 @@ var Bucket = (function(window, undefined){
 
     /**
      * get method
-     * gets an object of the context id with all depencdencies loaded
+     * gets an object of the context id with all dependencies loaded
      * and instantiated, as parameters if defined.
      *
-     * @param string {id of the context}
+     * @param string // id mapped to the context
      *
      * @return object
      */
-    Namespace.prototype.get = function(id) {
+    Namespace.prototype.get = function (id) {
       /**
        * we backslash every forwardslash so as to match an id, because
        * every context id having a forwardslash has ben replaced with
@@ -437,8 +440,7 @@ var Bucket = (function(window, undefined){
        */
       id = backslash(id);
 
-      // if the id hasnt been saved, we retyrn a null instead of undefined
-
+      // if the id hasnt been saved, we return an object of Error of undefined
       if (this._bucket[id] === undefined) {
         id = forwardslash(id);
         throw new Error("class " + id + " not defined, make sure that" +
@@ -455,7 +457,7 @@ var Bucket = (function(window, undefined){
         this._Tree.setRoot(this._bucket[id]);
         // we set the bucket where every nodes get fetched
         this._Tree.setBucket(this._bucket);
-        // the children of each nodes gets added
+        // the tree gets built by adding every  child to its parent
         this._Tree.process();
         var nodes = [], contexts = [], arg = [];
 
@@ -463,11 +465,12 @@ var Bucket = (function(window, undefined){
          * we have to to traverse every nodes
          * so that they can be worked on
          */
-        this._Tree.traverse(function(node){
+        this._Tree.traverse(function (node) {
           nodes.push(node.value);
           contexts.push(node.context);
         });
 
+        // we start working with the nodes from the bottom
         for (var i = nodes.length - 1; i > -1; --i) {
           id = forwardslash(contexts[i].id);
 
@@ -498,11 +501,11 @@ var Bucket = (function(window, undefined){
 
             if (arg.length > 0) {
               for (var k = 0; k < funcLen; k++) {
-                codes += "arg["+k+"],";
+                codes += "arg[" + k + "],";
               }
             }
 
-            if (typeof contexts[i].class == "function") {
+            if (typeof contexts[i].class === "function") {
               codes = codes.replace(/,$/, "") + endcode;
               contexts[i].class = eval(codes);
             }
@@ -510,6 +513,7 @@ var Bucket = (function(window, undefined){
             // triggers event create.class
             this._eventManager.trigger("create." + id, [contexts[i].class]);
 
+            // clean up the arguments array
             for (k = 0; k < funcLen; k++) {
               arg.shift();
             }
@@ -517,31 +521,38 @@ var Bucket = (function(window, undefined){
         }
 
         contexts = contexts[0].class;
-        // we clean the tree up so that it doesn't conflict
-        // with a context that may be needed later
+        /**
+         * we clean the tree up so that it doesn't conflict
+         * with a context that may be required later in the application and
+         * we can build up a new tree for the context
+         */
         this._Tree.clear();
 
         return contexts;
       }
 
+      // if the context doesn't have a dependency, no tree gets built, we
+      // only instantiate the context and return it.
       var context = new (this._bucket[id]()).class();
       this._eventManager.trigger("create." + forwardslash(id), [context]);
+
       return context;
     };
 
     /**
      * _handle method
      * it is used to handle a a dependency which is of
-     * type function
+     * type function which we really can predict if it is possible
      *
      * @param function
      * @param array // where the remaining contexts will be fetched from
+     *
      * @return object
      */
-    Namespace.prototype._handle = function(klass, bucket){
+    Namespace.prototype._handle = function (klass, arg) {
       var dependencies = klass.dependencies,
         len = dependencies ? dependencies.length : null,
-        args = len ? bucket.splice(0, len) : null, codes = "(function(){return new klass.class(",
+        args = len ? arg.splice(0, len) : null, codes = "(function(){return new klass.class(",
         endcode = ");})()", id = forwardslash(klass.id);
 
       if (dependencies && len > 0) {
@@ -563,9 +574,10 @@ var Bucket = (function(window, undefined){
      *
      * @param string
      * @param function
+     *
      * @return number
      */
-    Namespace.prototype.listen = function(event, callback) {
+    Namespace.prototype.listen = function (event, callback) {
       return this._eventManager.listen(event, callback);
     };
 
@@ -576,10 +588,9 @@ var Bucket = (function(window, undefined){
      * @param number
      * @return number
      */
-    Namespace.prototype.unListen = function(token) {
+    Namespace.prototype.unListen = function (token) {
       return this._eventManager.unListen(token);
     };
-
 
     /**
      * toString method
@@ -588,22 +599,25 @@ var Bucket = (function(window, undefined){
      *
      * @return string
      */
-    Namespace.prototype.toString = function(){
+    Namespace.prototype.toString = function () {
       return "Namespace::class";
     };
 
     return Namespace;
   })();
 
-  var Cache = (function(window, undefined){
+  // @var function
+  var Cache = (function (window, undefined) {
     /**
      * @var number
      * to hold the number of instantiated Cache object so that
      * the data each stores doesn't conflicts with other object of Cache
      */
     var instantiated = 0;
+
     /**
      * class Cache
+     *
      * Used to cache the contents of a file after it has been loaded
      * by the Load.js
      * After a file has been loaded for the first time it caches the files,
@@ -611,13 +625,23 @@ var Bucket = (function(window, undefined){
      * fetched from the browser to reduce load time of the app and it
      * can be reused by other parts of the app
      *
-     * @private property _log
      * @private property _storage
      * @public property length
+     * @public property id
      *
-     * @return void
+     * @private method _log
+     * @private method _get
+     * @private method _set
+     *
+     * @public method store
+     * @public method retrieve
+     * @public method delete
+     * @public method consume
+     * @public method clear
+     * @public method getAll
+     * @public method toString
      */
-    var Cache = function(){
+    var Cache = function () {
       this.length = 0;
       this._storage = localStorage || {};
       this.id = instantiated++;
@@ -633,7 +657,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Cache.prototype._log = function(key, value){
+    Cache.prototype._log = function (key, value) {
       var CacheLogger = JSON.parse(this._get("CacheLogger"));
 
       if (CacheLogger != null) {
@@ -644,7 +668,7 @@ var Bucket = (function(window, undefined){
         CacheLogger.CacheLogger[this.id][key] = value;
         this._set("CacheLogger", JSON.stringify(CacheLogger));
       } else {
-        this._set("CacheLogger", JSON.stringify({"CacheLogger": []}));
+        this._set("CacheLogger", JSON.stringify({ "CacheLogger": [] }));
 
         return;
       }
@@ -660,7 +684,7 @@ var Bucket = (function(window, undefined){
      *
      * @return boolean
      */
-    Cache.prototype.store = function(key, content){
+    Cache.prototype.store = function (key, content) {
       var item = JSON.stringify({
         key: key,
         value: content
@@ -680,11 +704,11 @@ var Bucket = (function(window, undefined){
      *
      * @return object
      */
-    Cache.prototype.retrieve = function(key){
+    Cache.prototype.retrieve = function (key) {
       if (key == null) {
         return null;
       }
-      var item = null ,
+      var item = null,
         CacheLogger = JSON.parse(this._get("CacheLogger")).CacheLogger;
 
       if (CacheLogger[this.id][key] != null) {
@@ -703,7 +727,7 @@ var Bucket = (function(window, undefined){
      *
      * @return boolean
      */
-    Cache.prototype.delete = function(key){
+    Cache.prototype.delete = function (key) {
       --this.length;
 
       var CacheLogger = JSON.parse(this._get("CacheLogger"));
@@ -726,7 +750,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    Cache.prototype._set = function(key, value){
+    Cache.prototype._set = function (key, value) {
       this._storage.setItem(key, value);
     };
 
@@ -738,7 +762,7 @@ var Bucket = (function(window, undefined){
      *
      * @return string
      */
-    Cache.prototype._get = function(key){
+    Cache.prototype._get = function (key) {
       return this._storage.getItem(key);
     };
 
@@ -750,7 +774,7 @@ var Bucket = (function(window, undefined){
      *
      * @return object
      */
-    Cache.prototype.consume = function(key){
+    Cache.prototype.consume = function (key) {
       var item = this.retrieve(key);
       this.delete(key);
 
@@ -763,7 +787,7 @@ var Bucket = (function(window, undefined){
      *
      * @return boolean
      */
-    Cache.prototype.clear = function(){
+    Cache.prototype.clear = function () {
       var CacheLogger = JSON.parse(this._get("CacheLogger")),
         items = CacheLogger.CacheLogger[this.id];
       for (var item in items) {
@@ -780,7 +804,7 @@ var Bucket = (function(window, undefined){
      *
      * @return object
      */
-    Cache.prototype.getAll = function(){
+    Cache.prototype.getAll = function () {
       var all = JSON.parse(this._get("CacheLogger"));
 
       return all.CacheLogger[this.id];
@@ -792,19 +816,18 @@ var Bucket = (function(window, undefined){
      *
      * @return string
      */
-    Cache.prototype.toString = function(){
+    Cache.prototype.toString = function () {
       return "Cache::class";
     };
 
     return Cache;
   })(this);
 
-  var backslash = function(string) {
+  var backslash = function (string) {
       return string.replace(/\//g, "\\");
-    }, forwardslash = function(string) {
+    }, forwardslash = function (string) {
       return string.replace(/\\/g, "/");
     };
-
   /**
    * function Load
    * loads the files passed to it from the server
@@ -831,9 +854,9 @@ var Bucket = (function(window, undefined){
    *
    * @return void
    */
-  var Load =  (function() {
+  var Load = (function () {
     var ajax = undefined, codes = "", HOST = location.protocol + "//" + location.host + "/",
-      Event = new EventManager(), jsExt = /\.js$/i, requireConfig = {base: "app", cache: false},
+      Event = new EventManager(), jsExt = /\.js$/i, requireConfig = { base: "app", cache: false },
       CacheManager = new Cache(),
       // variables by the automated cache system
       SECOND = 1000, MINUTE = SECOND * 60, HOUR = MINUTE * 60,
@@ -845,13 +868,13 @@ var Bucket = (function(window, undefined){
      */
     try {
       ajax = new XMLHttpRequest();
-    } catch(e) {
+    } catch (e) {
       try {
         ajax = new ActiveXObject("Msxml2.XMLHTTP.6.0");
-      } catch(e) {
+      } catch (e) {
         try {
           ajax = new ActiveXObject("Msxml2.XMLHTTP.3.0");
-        } catch(e) {
+        } catch (e) {
           throw new Error("Ajax not supported in this browser.");
         }
       }
@@ -881,9 +904,9 @@ var Bucket = (function(window, undefined){
       }
 
       var requestError = false,
-        callback = function(event) {
+        callback = function (event) {
           if (ajax.readyState === 4 && ajax.status === 200) {
-            codes += "\n// " + url + "\n" + ajax.responseText+"";
+            codes += "\n" + ajax.responseText + "";
             requestError = false;
 
             if (requireConfig.cache.automate) {
@@ -913,7 +936,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    var require = function(files) {
+    var require = function (files) {
       if (files === undefined) {
         throw new Error("require expects first param to be an array or string.");
       }
@@ -921,10 +944,11 @@ var Bucket = (function(window, undefined){
         files = [files];
       }
       var config = null;
+
       for (var id = 0, len = files.length; id < len; id++) {
         var file = files[id], filtered = false;
         // triggers event beforeload.file
-        Event.trigger("beforeload."+file, []);
+        Event.trigger("beforeload." + file, []);
 
         /**
          * we check if filters is|are defined so that we can match them to the
@@ -953,7 +977,7 @@ var Bucket = (function(window, undefined){
         }
         process(file);
         // triggers event afterload.file
-        Event.trigger("afterload."+files[id], []);
+        Event.trigger("afterload." + files[id], []);
       }
 
       eval(codes);
@@ -968,7 +992,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    require.setConfig = function(config) {
+    require.setConfig = function (config) {
       for (var id in config) {
         requireConfig[id.toLowerCase()] = config[id];
       }
@@ -985,7 +1009,7 @@ var Bucket = (function(window, undefined){
      *
      * @return number
      */
-    require.listen = function(event, callback) {
+    require.listen = function (event, callback) {
       return Event.listen(event, callback);
     };
 
@@ -997,7 +1021,7 @@ var Bucket = (function(window, undefined){
      *
      * @return number
      */
-    require.unListen = function(token) {
+    require.unListen = function (token) {
       return Event.unListen(token);
     };
 
@@ -1008,7 +1032,7 @@ var Bucket = (function(window, undefined){
      *
      * @return boolean
      */
-    require.burstCache = function(){
+    require.burstCache = function () {
       return CacheManager.clear();
     };
 
@@ -1019,7 +1043,7 @@ var Bucket = (function(window, undefined){
      *
      * @return void
      */
-    require.update = function(){
+    require.update = function () {
       var now = new Date(), expires = null, month = /^month/i,
         day = /^day/i, week = /^week/i, hour = /^hour/i, minute = /^minute/i,
         when = null, i = null;
@@ -1044,14 +1068,14 @@ var Bucket = (function(window, undefined){
         }
 
         if (CacheManager.retrieve("Cache") == null) {
-          CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
+          CacheManager.store("Cache", { updated: now.getTime(), expires: (now.getTime() + when) });
         }
 
         var time = CacheManager.retrieve("Cache").value;
 
         if (time.expires <= now.getTime()) {
           this.burstCache();
-          CacheManager.store("Cache", {updated: now.getTime(), expires: (now.getTime() + when)});
+          CacheManager.store("Cache", { updated: now.getTime(), expires: (now.getTime() + when) });
         }
       }
     };
@@ -1063,11 +1087,11 @@ var Bucket = (function(window, undefined){
      *
      * @return array
      */
-    require.require = function(files){
+    require.require = function (files) {
       var length = files.length, i = 0, texts = [];
 
       for (; i < length; ++i) {
-        process(files[i], true);
+        process(files[i]);
         texts.push(codes);
         codes = "";
       }
@@ -1078,7 +1102,8 @@ var Bucket = (function(window, undefined){
     return require;
   })();
 
-  var Bucket = (function(window, undefined){
+  // @var function
+  var Bucket = (function (window, undefined) {
     // @var object {Namespace}
     var Space = new Namespace(new Tree(), new EventManager()),
       // @var object {EventManager}
@@ -1089,10 +1114,13 @@ var Bucket = (function(window, undefined){
      * its a basic facade to the underlying core of the
      * library
      *
+     * @param array|string|object
+     * @param function
+     * @param object|undefined
+     *
      * @return void|object
      */
-
-    var Bucket = function(id, context, prototype){
+    var Bucket = function (id, context, prototype) {
       if (typeof id === "string" && context === undefined) {
         Load([id]);
         return Space.get(id);
@@ -1112,9 +1140,9 @@ var Bucket = (function(window, undefined){
      * @param string // name of the event to listen to
      * @param function // the function that gets excuted when the event occurs
      *
-     *  @return number // a token assigned to the listener
+     * @return string // a token assigned to the listener
      */
-    Bucket.listen = function(eventid, callback){
+    Bucket.listen = function (eventid, callback) {
       var event = eventid.split("."), token;
       if (event[0].toLowerCase() === "load") {
         event = event.splice(1).join(".");
@@ -1131,29 +1159,33 @@ var Bucket = (function(window, undefined){
 
     /**
      * static method trigger
-     * triggers an event, telling it listeners that an event has occured
+     * triggers an event, telling it listeners that the event has occured,
+     * internal events cannot be triggered
+     *
      * @param string
      * @param array
+     *
      * @return void
      */
-    Bucket.trigger = function(event, arg){
+    Bucket.trigger = function (event, arg) {
       Event.trigger(event, arg);
     };
 
     /**
      * static method unListen
-     * removes a listener from its parent
+     * removes a listener from an event which it registered to
      *
      * @param string
+     *
      * @return string
      */
-    Bucket.unListen = function(token){
+    Bucket.unListen = function (token) {
       var reply;
       if (token.match(/^(namespace)/i) !== null) {
         token = parseInt(token.replace(/^(namespace)/i, ""));
         reply = Space.unListen(token);
       } else if (token.match(/^(load)/i) !== null) {
-        token = parseInt(token.replace(/^(require)/i, ""));
+        token = parseInt(token.replace(/^(load)/i, ""));
         reply = Load.unListen(token);
       } else {
         reply = Event.unListen(token);
@@ -1166,41 +1198,45 @@ var Bucket = (function(window, undefined){
      * static method burstCache
      * it bursts the cache system use by Load
      *
-     * @return boolean
+     * @return bool
      */
-    Bucket.burstCache = function(){
+    Bucket.burstCache = function () {
       return Load.burstCache();
     };
 
     /**
      * static method burstAllCache
-     * deletes every property of object CacheLogger
+     * deletes every property of object CacheLogger and resets it.
      *
      * @return bool
      */
-    Bucket.burstAllCache = function(){
+    Bucket.burstAllCache = function () {
       localStorage.removeItem("CacheLogger");
-      localStorage.setItem("CacheLogger", JSON.stringify({"CacheLogger": []}));
+      localStorage.setItem("CacheLogger", JSON.stringify({ "CacheLogger": [] }));
     };
 
     /**
      * static method getCacheSystem
+     * get a cache system that can be reused in another application built
+     * on this library
      *
      * @return object {Cache}
      */
-    Bucket.getCacheSystem =  function(){
+    Bucket.getCacheSystem = function () {
       return new Cache();
     };
 
     /**
      * static method load
-     * loads a file from the server and evaluates it
+     * loads the contents of a file from the server without evaluating it,
+     * it can be used to fetch the content of a css, js or any text file in a
+     * synchronous manner.
      *
      * @param string|array
      *
      * @return void
      */
-    Bucket.load = function(files){
+    Bucket.load = function (files) {
       if (typeof files == "string") {
         files = [files];
       }

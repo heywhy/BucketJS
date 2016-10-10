@@ -291,7 +291,7 @@ var Load =  (function() {
     var length = files.length, i = 0, texts = [];
 
     for (; i < length; ++i) {
-      process(files[i], true);
+      process(files[i]);
       texts.push(codes);
       codes = "";
     }
